@@ -1,26 +1,26 @@
 #!/bin/sh
-# SessionStart hook: prints pstack's routing instruction as session context.
+# SessionStart hook: prints astack's routing instruction as session context.
 #   session-start.sh        Claude Code: plain text
 #   session-start.sh agy    Antigravity: one JSON object with injectSteps
-# Turn it off with PSTACK_SESSION_HOOK=off or a `session hook: off` line in
-# the pstack model sheet that /setup-pstack writes. On Claude Code, a sheet
-# committed at <repo>/.claude/pstack-models.md replaces the user's sheet.
+# Turn it off with ASTACK_SESSION_HOOK=off or a `session hook: off` line in
+# the astack model sheet that /setup-astack writes. On Claude Code, a sheet
+# committed at <repo>/.claude/astack-models.md replaces the user's sheet.
 set -eu
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 runtime=${1:-claude}
 
 if [ "$runtime" = agy ]; then
-  sheet="$HOME/.gemini/config/pstack-models.md"
+  sheet="$HOME/.gemini/config/astack-models.md"
 else
-  sheet="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/pstack-models.md"
+  sheet="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/astack-models.md"
   if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
     root=$(git -C "$CLAUDE_PROJECT_DIR" rev-parse --show-toplevel 2>/dev/null) || root=$CLAUDE_PROJECT_DIR
-    [ ! -f "$root/.claude/pstack-models.md" ] || sheet="$root/.claude/pstack-models.md"
+    [ ! -f "$root/.claude/astack-models.md" ] || sheet="$root/.claude/astack-models.md"
   fi
 fi
 
 off=0
-[ "${PSTACK_SESSION_HOOK:-}" != off ] || off=1
+[ "${ASTACK_SESSION_HOOK:-}" != off ] || off=1
 if [ -f "$sheet" ] && grep -qix 'session hook: *off' "$sheet"; then off=1; fi
 
 if [ "$runtime" = agy ]; then

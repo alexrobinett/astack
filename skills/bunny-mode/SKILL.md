@@ -90,7 +90,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 **Use `subagent_type: "bunny-agent"` for any subagent you spawn directly inside a playbook step.** This install registers the agents without a plugin prefix, so use the bare name. The chat that receives `/bunny-mode` runs the playbook itself. Routed workflow skills (`interrogate`, `swarm`) set their own `subagent_type`. Respect it.
 
-**Defaults for every `Agent` call.** `run_in_background: true`, full tool access (do not pick a subagent_type that strips MCP), file pointers not inlined context, and an explicit model per role, background workers included. `/setup-pstack` writes `pstack-models.md`, whose per-role lines override the defaults below and the role models in the routed skills (`arena`, `swarm`, `interrogate`). A role with no line keeps its default. A line of `inherit-parent` or `auto` runs the role on the parent model, so omit `model` on the `Agent` call. `bunny-agent` sets no model of its own, so it then runs on the parent model. Each code playbook reads its own line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`), prose and judgment read `judgment and prose`, and trivial mechanical edits read `swarm workers`.
+**Defaults for every `Agent` call.** `run_in_background: true`, full tool access (do not pick a subagent_type that strips MCP), file pointers not inlined context, and an explicit model per role, background workers included. `/setup-astack` writes `astack-models.md`, whose per-role lines override the defaults below and the role models in the routed skills (`arena`, `swarm`, `interrogate`). A role with no line keeps its default. A line of `inherit-parent` or `auto` runs the role on the parent model, so omit `model` on the `Agent` call. `bunny-agent` sets no model of its own, so it then runs on the parent model. Each code playbook reads its own line (`feature, refactoring`, `bug-fix`, `perf-issue`, or `hillclimb`), prose and judgment read `judgment and prose`, and trivial mechanical edits read `swarm workers`.
 
 Role defaults for code, prose, judgment, trivial mechanical edits, and the diverse review and design panels are in [Models](#models).
 
@@ -118,7 +118,7 @@ Investigation, Bug fix, Perf issue, Hillclimb, Runtime forensics, Trace forensic
 
 ## Models
 
-Role defaults, stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`). A matching role line in the `pstack-models.md` override sheet overrides each at runtime; `/setup-pstack` writes it and lists its path per runtime.
+Role defaults, stamped from `plugins/pstack/models.json` (edit there, rerun `tools/generate.mjs`). A matching role line in the `astack-models.md` override sheet overrides each at runtime; `/setup-astack` writes it and lists its path per runtime.
 
 - feature, refactoring: `sonnet`
 - bug-fix: `opus`

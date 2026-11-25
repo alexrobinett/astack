@@ -96,21 +96,21 @@ find "$root/skills" "$root/agents" -name '*.md' | while IFS= read -r f; do
     s/ from disk under the installed plugin/ from disk/g;
     s/The local links point into the installed plugin/The local links point into the installed skills/g;
     # Installed skills are links into this checkout: edit them there.
-    s/Never edit a skill under `plugins\/cache\/`\. Before approval, show its destination, .*?After approval, copy the skill folder there and edit the copy\./Never edit a skill under `plugins\/cache\/`. A skill that `readlink` shows is a link into the tstack checkout is edited in that checkout, and the user commits it there. For any other skill, before approval, show its destination, `.claude\/skills\/<skill>\/` or `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/<skill>\/`. After approval, copy the skill folder there and edit the copy./s;
-    s/For a pstack skill, never edit the installed plugin under .*? and does not merge them\. \|/In this install, `\${CODEX_HOME:-~\/.codex}\/skills\/<skill>` is a link into the tstack checkout, so edit a tstack skill in that checkout and let the user commit it. For any other skill, before approval show the destination, the repository\x27s `.agents\/skills\/<skill>\/` for a project copy, and after approval copy the skill folder there. |/s;
+    s/Never edit a skill under `plugins\/cache\/`\. Before approval, show its destination, .*?After approval, copy the skill folder there and edit the copy\./Never edit a skill under `plugins\/cache\/`. A skill that `readlink` shows is a link into the astack checkout is edited in that checkout, and the user commits it there. For any other skill, before approval, show its destination, `.claude\/skills\/<skill>\/` or `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/<skill>\/`. After approval, copy the skill folder there and edit the copy./s;
+    s/For a pstack skill, never edit the installed plugin under .*? and does not merge them\. \|/In this install, `\${CODEX_HOME:-~\/.codex}\/skills\/<skill>` is a link into the astack checkout, so edit a tstack skill in that checkout and let the user commit it. For any other skill, before approval show the destination, the repository\x27s `.agents\/skills\/<skill>\/` for a project copy, and after approval copy the skill folder there. |/s;
     # Links to the dropped harness mappings keep their text, lose the link.
     s/\[([^\]]*)\]\([^)]*\/(?:pi-tools|copilot-tools|muse-tools|minimax-tools|omp-tools|kimi-tools|grok|dsh-tools|opencode-tools)\.md(?:#[^)]*)?\)/$1/g;
   ' "$f"
 done
 
 # The poteto-agent definition looks for poteto-mode in the plugin cache.
-perl -0pi -e 's/With no path, before any other work, search .*? If no such file exists, stop and tell your parent\./With no path, read `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/poteto-mode\/SKILL.md`, or `\${CODEX_HOME:-\$HOME\/.codex}\/skills\/poteto-mode\/SKILL.md` on Codex, or `skills\/poteto-mode\/SKILL.md` inside the tstack plugin folder on Antigravity. If none exists, stop and tell your parent./s' \
+perl -0pi -e 's/With no path, before any other work, search .*? If no such file exists, stop and tell your parent\./With no path, read `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/poteto-mode\/SKILL.md`, or `\${CODEX_HOME:-\$HOME\/.codex}\/skills\/poteto-mode\/SKILL.md` on Codex, or `skills\/poteto-mode\/SKILL.md` inside the astack plugin folder on Antigravity. If none exists, stop and tell your parent./s' \
   "$root/agents/poteto-agent.md" "$refs/agents/poteto-agent.md"
 
 # Routing context for the SessionStart hook and AGENTS.md.
-perl -pe 's/`pstack:([a-z-]+)`/`$1`/g; s/You have pstack\./You have tstack with pstack routing./; s/the right pstack skill/the right skill/' \
+perl -pe 's/`pstack:([a-z-]+)`/`$1`/g; s/You have pstack\./You have astack: the tstack and pstack skills, with bunny-mode routing./; s/the right pstack skill/the right skill/' \
   "$plugin/hooks/session-start-context.md" > "$root/hooks/routing.md"
-perl -pe 's/`pstack:([a-z-]+)`/`$1`/g; s/You have pstack\./You have tstack with pstack routing./; s/the right pstack skill/the right skill/' \
+perl -pe 's/`pstack:([a-z-]+)`/`$1`/g; s/You have pstack\./You have astack: the tstack and pstack skills, with bunny-mode routing./; s/the right pstack skill/the right skill/' \
   "$plugin/hooks/session-start-agy.md" > "$root/hooks/routing-agy.md"
 # Antigravity's hook prints JSON; upstream's POSIX awk helpers build it.
 cp "$plugin/hooks/json.awk" "$plugin/hooks/agy-context.awk" "$root/hooks/"
@@ -131,5 +131,29 @@ grep -rlI --exclude-dir=node_modules 'poteto' "$root/skills" "$root/agents" "$ro
 done
 perl -pi -e 's/^poteto-(mode|help)$/bunny-$1/' "$manifest"
 perl -pi -e 's/^poteto-agent\.md$/bunny-agent.md/' "$agents_manifest"
+
+# The stack is astack: setup-pstack, its sheet, and its env switch take the
+# astack name, and the setup skill also configures tstack's own roles.
+mv "$root/skills/setup-pstack" "$root/skills/setup-astack"
+grep -rlIE --exclude-dir=node_modules 'setup-pstack|pstack-models|PSTACK_SESSION_HOOK|Setup pstack|pstack model configuration|models pstack uses|configure pstack models' \
+  "$root/skills" "$root/agents" "$root/hooks/routing.md" "$root/hooks/routing-agy.md" | while IFS= read -r f; do
+  perl -pi -e '
+    s/setup-pstack/setup-astack/g;
+    s/pstack-models/astack-models/g;
+    s/PSTACK_SESSION_HOOK/ASTACK_SESSION_HOOK/g;
+    s/^# Setup pstack$/# Setup astack/;
+    s/# pstack model configuration/# astack model configuration/;
+    s/Configure which models pstack uses per role/Configure which models astack uses per role, for the pstack and tstack skills/;
+    s/"configure pstack models"/"configure astack models"/;
+  ' "$f"
+done
+perl -pi -e 's/^setup-pstack$/setup-astack/' "$manifest"
+
+setup="$root/skills/setup-astack/SKILL.md"
+perl -0pi -e '
+  s/\n### 4\. Choose whether the session hook routes tasks\n/\n### 3b. Choose the tstack roles\n\nThree more lines set the models that tstack\x27s own skills use. Their values are T3 Code models, not `Agent` slugs. In T3 Code, resolve them with `orchestrator_capabilities` and offer what it lists, plus `claude flagship`, `gpt flagship`, and `gemini flagship`, which mean the newest flagship that provider lists when the skill runs. A concrete model ID, such as `gemini-4-neon`, pins that seat.\n\n- `council members`: the three council seats, one per provider. T3 Code\x27s default review panels use the same seats. Default `claude flagship, gpt flagship, gemini flagship`.\n- `sol-loop model`: the GPT model that sol-loop reviews with. Default `gpt flagship`.\n- `gemini providers`: the T3 Code providers to try, in order, for a Gemini seat. Default `antigravity, cursor, opencode`.\n\nOutside T3 Code these lines apply only when the harness can reach those providers.\n\n### 4. Choose whether the session hook routes tasks\n/ or die "setup-astack: step 4 anchor missing\n";
+  s/(If a chosen real slug or level is not available, stop and ask again\.)/$1 Check the tstack lines from step 3b against `orchestrator_capabilities` instead. A model or provider it does not list needs a new choice./ or die "setup-astack: step 5 anchor missing\n";
+  s/\n(default effort: session\nsession hook: on\n)/\ncouncil members: claude flagship, gpt flagship, gemini flagship\nsol-loop model: gpt flagship\ngemini providers: antigravity, cursor, opencode\n\n$1/ or die "setup-astack: sheet template anchor missing\n";
+' "$setup"
 
 echo "imported $(wc -l < "$manifest" | tr -d ' ') pstack skills from $(cat "$root/skills/.pstack-commit" 2>/dev/null || echo "$src")"

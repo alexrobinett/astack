@@ -1,6 +1,6 @@
 # Notice
 
-This fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) (MIT, (c) 2026
+astack, this fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) (MIT, (c) 2026
 Theo Browne, see [LICENSE](LICENSE)) imports every skill and agent from
 [michael-denyer/pstack-claude](https://github.com/michael-denyer/pstack-claude)
 except `babysit`, at the commit recorded in `skills/.pstack-commit`. The list of
@@ -17,4 +17,5 @@ license ([LICENSE-pstack](LICENSE-pstack)). `scripts/sync-pstack.sh` records
 every change this fork makes to the imported files, and
 `scripts/t3-tools.md` is this fork's own addition. pstack's `poteto-mode`,
 `poteto-help`, and `poteto-agent` are renamed `bunny-mode`, `bunny-help`, and
-`bunny-agent`; the router's description still credits poteto.
+`bunny-agent`, and `setup-pstack` is renamed `setup-astack`; the router's
+description still credits poteto.

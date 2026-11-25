@@ -13,8 +13,12 @@ and explore new ideas, skip fixes to code being replaced.
 Bring in three delegates to help with the user's request, usually for review
 or feedback. Use one strong model from each of three different providers, at
 high reasoning effort. If the user's instructions name council members, use
-those. Otherwise pick the latest flagship model from each provider, for
-example Claude Opus, GPT Sol, and Gemini Pro.
+those. Otherwise use the `council members` line in the astack model sheet
+(`astack-models.md`, which `/setup-astack` writes). Without one, pick the
+latest flagship model from each provider: Claude, GPT, and Gemini. A value
+of `claude flagship`, `gpt flagship`, or `gemini flagship` means the newest
+flagship that provider lists. For a Gemini seat, try the providers on the
+sheet's `gemini providers` line in order.
 
 In T3 Code, use `orchestrator_capabilities` to resolve the models, then
 `delegate_task` to start one delegate per model in parallel. Elsewhere, use

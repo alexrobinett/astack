@@ -1,6 +1,6 @@
 # Setup pstack on GitHub Copilot
 
-On GitHub Copilot this file replaces the model, effort, and hook questions in steps 1, 3, and 4 of [setup-pstack](SKILL.md), the sheet header in step 6, and step 7. Steps 2, 5, 8, 9, and 10 still apply. pstack ships no Copilot model defaults, so every model in the sheet comes from the user's answers. Never pick a model the user has not chosen, and never write the Claude Code names in [Models](SKILL.md#models) or step 6's values into a Copilot sheet.
+On GitHub Copilot this file replaces the model, effort, and hook questions in steps 1, 3, and 4 of [setup-astack](SKILL.md), the sheet header in step 6, and step 7. Steps 2, 5, 8, 9, and 10 still apply. pstack ships no Copilot model defaults, so every model in the sheet comes from the user's answers. Never pick a model the user has not chosen, and never write the Claude Code names in [Models](SKILL.md#models) or step 6's values into a Copilot sheet.
 
 Run setup on a model at least as strong as gpt-5.4-mini or a Sonnet-class Claude model. On a Haiku-class model, setup picked models the user never chose in about half of the smoke runs.
 
@@ -12,7 +12,7 @@ Copilot's `ask_user` takes one question per call with a fixed choice list. That 
 - On a re-run, put step 2's saved value for the question first, labeled `(current)`. Picking it keeps that value.
 - A typed answer counts only when it is a detected model ID or `inherit-parent`; otherwise ask the same question again.
 - An answer the user already gave in the request counts. Ask only the questions it leaves open.
-- When `ask_user` is not available (a `-p` run, or `--no-ask-user`) and a model question is still open, do not choose for the user and do not write the sheet. Tell the user to run `setup-pstack` in an interactive session, and run this session's roles as `inherit-parent`.
+- When `ask_user` is not available (a `-p` run, or `--no-ask-user`) and a model question is still open, do not choose for the user and do not write the sheet. Tell the user to run `setup-astack` in an interactive session, and run this session's roles as `inherit-parent`.
 
 ## Current state
 
@@ -23,14 +23,14 @@ On Copilot, step 2's saved values are the role lines the plugin hook put in cont
 A Copilot sheet uses step 6's role lines and settings under this header in place of step 6's paragraph, because every role keeps a line and `check-sheet.sh` checks that:
 
 ```markdown
-# pstack model configuration
+# astack model configuration
 
-Per-role model choices for pstack skills on GitHub Copilot, written by setup-pstack. Every role keeps its line; rerun setup-pstack to change one. A value of `inherit-parent` or `auto` runs that role on the parent session's model (the `task` call omits `model`); an alias entry in a panel list still counts toward that panel's fan-out. A model may carry a reasoning effort, as in `gpt-5.5 @xhigh` (levels: low, medium, high, xhigh, max), which the `task` call passes as `reasoning_effort`. `default effort` sets the level for a value without one; `session` keeps the parent session's effort. `session hook: off` stops the SessionStart hook from injecting the bunny-mode mandate; any other value, or no line, leaves it on. `panel vendors: any` records that the user kept a panel whose models come from one vendor.
+Per-role model choices for pstack skills on GitHub Copilot, written by setup-astack. Every role keeps its line; rerun setup-astack to change one. A value of `inherit-parent` or `auto` runs that role on the parent session's model (the `task` call omits `model`); an alias entry in a panel list still counts toward that panel's fan-out. A model may carry a reasoning effort, as in `gpt-5.5 @xhigh` (levels: low, medium, high, xhigh, max), which the `task` call passes as `reasoning_effort`. `default effort` sets the level for a value without one; `session` keeps the parent session's effort. `session hook: off` stops the SessionStart hook from injecting the bunny-mode mandate; any other value, or no line, leaves it on. `panel vendors: any` records that the user kept a panel whose models come from one vendor.
 ```
 
 ## Detect models
 
-The detected set is the `model` enum of the `task` tool, with full IDs exactly as the enum lists them. Never shorten one to a family name. If this session has no `task` tool or its enum is not visible, write `inherit-parent` for every role, skip the model questions, and tell the user to rerun `setup-pstack` in a session with the `task` tool. The Claude Code names in [Models](SKILL.md#models) and the values in step 6's sheet shape are not Copilot model IDs; never write them into a Copilot sheet.
+The detected set is the `model` enum of the `task` tool, with full IDs exactly as the enum lists them. Never shorten one to a family name. If this session has no `task` tool or its enum is not visible, write `inherit-parent` for every role, skip the model questions, and tell the user to rerun `setup-astack` in a session with the `task` tool. The Claude Code names in [Models](SKILL.md#models) and the values in step 6's sheet shape are not Copilot model IDs; never write them into a Copilot sheet.
 
 Group the detected IDs by vendor, from each ID's text before its first hyphen. `claude` is Claude, `gpt` is GPT, `gemini` is Gemini, `grok` is Grok, `kimi` is Kimi, and any other ID is Other. Keep the enum's order within a vendor.
 
@@ -73,7 +73,7 @@ The panel from questions 4 through 6 writes every panel role, in slot order. On 
 
 ## Write and check
 
-Validate as step 5 describes. Copilot's file tools expand neither `~` nor variables, so print the sheet's absolute path with `echo "${COPILOT_HOME:-$HOME/.copilot}/pstack-models.md"` in `bash`, and write the whole sheet to exactly that path in one tool call, so the write asks for path access at most once.
+Validate as step 5 describes. Copilot's file tools expand neither `~` nor variables, so print the sheet's absolute path with `echo "${COPILOT_HOME:-$HOME/.copilot}/astack-models.md"` in `bash`, and write the whole sheet to exactly that path in one tool call, so the write asks for path access at most once.
 
 Then run `sh <this skill's directory>/scripts/check-sheet.sh` through `bash`, with the directory's absolute path and no arguments. It checks the Copilot sheet as the plugin hook does at session start: every role has a line, every entry is `inherit-parent`, `auto`, or a model ID with an optional `@<level>`, and each panel names models from two vendors unless the sheet has `panel vendors: any`. It prints `sheet ok`, or `sheet invalid:` and each problem. On `sheet invalid`, fix those lines and write the whole sheet again, then rerun the check. The plugin hook approves the check without a prompt.
 
@@ -84,5 +84,5 @@ For the rest of this session, use the values you just wrote; do not read the she
 Add no include line: Copilot does not expand `@~/` paths in user instructions, and the plugin hook injects the sheet's role lines at session start. If the hook is on but this session's context lacks the routing mandate (the block that opens `You have pstack.`), another hook or a skills-only install has displaced it. Offer to append this standing instruction to `~/.copilot/copilot-instructions.md` instead:
 
 ```text
-pstack: for a task that touches more than one file, changes a signature other files call, involves a design choice, or is a bug with an unknown cause or a performance issue, load the bunny-mode skill and follow it. Resolve Claude tool and model names through bunny-mode's references/copilot-tools.md; role models are in ~/.copilot/pstack-models.md.
+pstack: for a task that touches more than one file, changes a signature other files call, involves a design choice, or is a bug with an unknown cause or a performance issue, load the bunny-mode skill and follow it. Resolve Claude tool and model names through bunny-mode's references/copilot-tools.md; role models are in ~/.copilot/astack-models.md.
 ```

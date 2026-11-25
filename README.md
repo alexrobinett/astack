@@ -1,6 +1,6 @@
-# tstack + pstack
+# astack
 
-A fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) with all of
+astack is a fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) with all of
 [pstack](https://github.com/michael-denyer/pstack-claude) ported in, including
 its routing. See [pstack routing](#pstack-routing) below.
 
@@ -57,15 +57,18 @@ This fork carries 67 pstack skills unchanged except for these adaptations:
   Gemini flagship. Gemini runs on Antigravity, or on another T3 provider that
   lists a Gemini model.
 - **Renamed entry points.** `poteto-mode`, `poteto-help`, and `poteto-agent`
-  are `bunny-mode`, `bunny-help`, and `bunny-agent`.
+  are `bunny-mode`, `bunny-help`, and `bunny-agent`. `setup-pstack` is
+  `setup-astack`, its sheet is `astack-models.md`, and the routing switch is
+  `ASTACK_SESSION_HOOK`.
 - **No plugin.** The plugin's agents install to `~/.claude/agents/`, and the
   routing hook and Codex `AGENTS.md` block come from `install.sh`.
 
 Start with `/bunny-mode <goal>`, or `/bunny-help` to find the right skill.
-Configure models per role with `/setup-pstack`. On Claude Code, turn routing
+Configure models per role with `/setup-astack`. It covers pstack's roles and
+tstack's own: `council members`, `sol-loop model`, and `gemini providers`. On Claude Code, turn routing
 off with `session hook: off` in the model sheet (yours, or a project's
-`.claude/pstack-models.md`) or `PSTACK_SESSION_HOOK=off`. On Codex, routing is
-the block between the `tstack routing` markers in `~/.codex/AGENTS.md`; delete
+`.claude/astack-models.md`) or `ASTACK_SESSION_HOOK=off`. On Codex, routing is
+the block between the `astack routing` markers in `~/.codex/AGENTS.md`; delete
 it to turn routing off.
 
 To update from pstack, pull a pstack-claude checkout and run
@@ -75,9 +78,9 @@ reapplies every adaptation. `skills/.pstack-commit` records the source commit.
 ## Install
 
 ```bash
-git clone https://github.com/alexrobinett/tstack
-tstack/install.sh             # links skills and agents, adds the routing hook
-tstack/install.sh --uninstall
+git clone https://github.com/alexrobinett/astack
+astack/install.sh             # links skills and agents, adds the routing hook
+astack/install.sh --uninstall
 ```
 
 Skills install as links into this checkout, so `git pull` updates them.

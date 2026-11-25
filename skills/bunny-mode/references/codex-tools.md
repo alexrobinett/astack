@@ -52,11 +52,11 @@ Skills name Claude defaults (a single-role default for code/prose/judgment, a wo
 - Roles that default to the strongest Claude model (`strongest judgment`): your strongest Codex model (for example `gpt-6.2-astra`).
 - Diverse-model panels (`arena`, `interrogate`): the adversarial signal comes from model diversity, so use the distinct Codex models available to you. A good default panel on ChatGPT is `gpt-6.2-astra`, `gpt-6.2-sol`, `gpt-6.1-terra`, `gpt-6-luna`. If only one model family is reachable, vary reasoning effort and note in the verdict that diversity was reduced.
 
-`/setup-pstack` writes the configured model list. On Codex, set it to your Codex model slugs.
+`/setup-astack` writes the configured model list. On Codex, set it to your Codex model slugs.
 
 ## Session routing hook
 
-The native pstack plugin bundles the same `SessionStart` routing instruction as the Claude Code plugin, through `session-start.sh` on macOS and Linux and `session-start.ps1` on Windows. Codex runs the hook on startup, resume, clear, compact, and fork after the user trusts the hook through `/hooks`. The hook reads `session hook` from the Codex sheet, at the path in [setup-pstack's runtime table](../../setup-pstack/references/runtimes.md); `session hook: off` disables injection.
+The native pstack plugin bundles the same `SessionStart` routing instruction as the Claude Code plugin, through `session-start.sh` on macOS and Linux and `session-start.ps1` on Windows. Codex runs the hook on startup, resume, clear, compact, and fork after the user trusts the hook through `/hooks`. The hook reads `session hook` from the Codex sheet, at the path in [setup-astack's runtime table](../../setup-astack/references/runtimes.md); `session hook: off` disables injection.
 
 A skills-only installation does not include plugin hooks. Request `bunny-mode` explicitly or add a standing instruction to `AGENTS.md` in that case.
 
@@ -78,7 +78,7 @@ Affected skill entry points point here. Most skills need only the tables above. 
 | Skill | On Codex |
 |-------|----------|
 | `interrogate` | The `subagent_type`/`model` dispatch fields map to `spawn_agent`; substitute your configured Codex models and keep the adversary panel model-diverse. |
-| `setup-pstack` | The skill's [Other runtimes](../../setup-pstack/references/runtimes.md) table names the Codex sheet path and how it loads; the slugs are your Codex models (see Model names above). The role rows are identical. |
+| `setup-astack` | The skill's [Other runtimes](../../setup-astack/references/runtimes.md) table names the Codex sheet path and how it loads; the slugs are your Codex models (see Model names above). The role rows are identical. |
 | `no-comments` | There is no `comment-sicko` subagent type; see Subagent policy above. |
 | `thermos` | There are no thermo-nuclear subagent types; see Subagent policy above. |
 | `teach` | Running `how` and `why` in parallel maps to `spawn_agent` fan-out; image generation uses the configured Codex equivalent. |
@@ -91,7 +91,7 @@ Affected skill entry points point here. Most skills need only the tables above. 
 | `architect` | A large or contested design goes through the **arena** skill, so its `spawn_agent` fan-out and model substitution apply here too. |
 | `arena` | The parallel candidates and the cross-judge map to `spawn_agent`; substitute your configured Codex models for the runners and the cross-judge pool (see Model names above). |
 | `how` | The one read-only subagent maps to `spawn_agent`. |
-| `reflect` | The transcript finder reads Claude Code's layout under `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/`, so work from the conversation in your context, as the skill allows when the finder finds nothing. In this install, `${CODEX_HOME:-~/.codex}/skills/<skill>` is a link into the tstack checkout, so edit a tstack skill in that checkout and let the user commit it. For any other skill, before approval show the destination, the repository's `.agents/skills/<skill>/` for a project copy, and after approval copy the skill folder there. |
+| `reflect` | The transcript finder reads Claude Code's layout under `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/`, so work from the conversation in your context, as the skill allows when the finder finds nothing. In this install, `${CODEX_HOME:-~/.codex}/skills/<skill>` is a link into the astack checkout, so edit a tstack skill in that checkout and let the user commit it. For any other skill, before approval show the destination, the repository's `.agents/skills/<skill>/` for a project copy, and after approval copy the skill folder there. |
 | `recall` | Search this workspace's Codex rollouts (see Tool actions). Do not list or read `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects/`. It holds Claude Code transcripts, not this session's history. In a rollout, chat messages are the `response_item` records whose `payload.type` is `message`, with the speaker in `payload.role`. Skip `developer` records, which are injected instructions. |
 | `show-me-your-work` | Check the log against this run's current Codex rollout, using `CODEX_THREAD_ID` and the state index as described in Tool actions. A filename suffix alone cannot select the current file after revert. If the current path is unavailable or ambiguous, report that the audit could not run instead of guessing a rollout. Do not read Claude Code's projects directory. |
 | `swarm` | Each worker is a `spawn_agent` call on your configured Codex model, and those calls already run concurrently; give each writing worker its own worktree or output directory (see Subagent policy above). |
