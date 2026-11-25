@@ -46,9 +46,13 @@ This fork carries 67 pstack skills unchanged except for these adaptations:
   to use T3 Code: `delegate_task` for background, worktree, and
   cross-provider agents; model panels (`arena`, `interrogate`) that mix
   providers; `watch_pull_request` and `link_pull_request` for PRs.
-- **tstack wins where they overlap.** pstack's standalone `babysit` skill is
-  replaced by `babysit-pr`. "Full send", "council", and "file a PR" run the
-  tstack skills.
+- **One owner where they overlap.**
+  [`tstack-skills.md`](scripts/tstack-skills.md) tells the router, on every
+  harness, whether a tstack skill or a playbook owns the work. "Full send",
+  "council", "sol loop", "take over", and "modernize" run the tstack skills.
+  A PR opened at the end of a bunny-mode run follows the Opening a PR
+  playbook, and `file-pr` owns it everywhere else. pstack's standalone
+  `babysit` skill is replaced by `babysit-pr`.
 - **Claude Code, Codex, and Antigravity.** Mappings for other harnesses are
   removed. Antigravity loads the fork as a plugin (`.antigravity-plugin/`
   and the root `hooks.json`), with the same routing hook.
@@ -74,6 +78,11 @@ it to turn routing off.
 To update from pstack, pull a pstack-claude checkout and run
 `scripts/sync-pstack.sh <checkout>`. It replaces the imported skills and
 reapplies every adaptation. `skills/.pstack-commit` records the source commit.
+The sync ends with `scripts/check.sh`, which fails when an adaptation no
+longer matches pstack's wording. If the sync stops partway, fix the pattern in
+`sync-pstack.sh`, run `git checkout -- skills agents hooks`, and sync again.
+`tests/run.sh` tests the routing hook and `install.sh` in a throwaway home.
+CI runs both.
 
 ## Install
 
@@ -89,8 +98,9 @@ exists. Antigravity gets the fork linked as a plugin in each Antigravity config
 folder it finds: T3 Code's bundled Antigravity under
 `~/.t3/userdata/providers/antigravity/*/config/`, and `~/.gemini/config/`.
 Antigravity discovers it there with no install command. Rerun `install.sh`
-after T3 sets up a new Antigravity account. The hook points at this checkout, so rerun `install.sh` if you move
-it. If the pstack plugin is installed too, uninstall it so skills don't
+after T3 sets up a new Antigravity account. The links and the hook point at this checkout, so rerun `install.sh` from
+the new location if you move it. It replaces the dead links and the old hook
+entry. If the pstack plugin is installed too, uninstall it so skills don't
 load twice: `claude plugin uninstall pstack@pstack-claude`.
 
 ## Requirements

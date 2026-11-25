@@ -81,9 +81,6 @@ them.
   provider run through `delegate_task`.
 - If a seat is still unavailable after that fallback, report it. Do not swap
   in another provider's model without saying so.
-- tstack's **council** and **sol-loop** skills are cross-provider review
-  loops. When a playbook asks for an independent review and the user prefers
-  council, run council for that gate.
 
 ## Pull requests
 
@@ -103,15 +100,9 @@ them.
 - **Never wait with** `sleep`, a polling loop, `gh --watch`, `Monitor`, or
   `ScheduleWakeup` for a PR. For a background command or Monitor you started,
   use `t3_background_wait`.
-- **Which PR format.** Inside a bunny-mode run, the Opening a PR playbook
-  owns the PR, its title, and its body, and **file-pr** does not run, even
-  when its description matches. **file-pr** owns the PR only outside
-  bunny-mode, or when **full-send**, **full-stop**, or **takeover** calls
-  it.
-- **tstack shipping skills.** "Full send" and "full stop" run tstack's
-  **full-send** and **full-stop**. Run bunny-mode's playbook for the change
-  first, then hand the finished branch to that skill, which then owns the
-  PR.
+- **tstack skills.** [`tstack-skills.md`](tstack-skills.md) says whether a
+  tstack skill or a playbook owns a PR, a review, or a takeover. It applies
+  in T3 Code as on every harness.
 - **Autopilot owners.** T3 Code never lets a delegated child watch a PR, so
   in Autopilot-full and Autopilot-stack the parent thread watches every PR in
   the program with `watch_pull_request`. Each owner is a `delegate_task`
