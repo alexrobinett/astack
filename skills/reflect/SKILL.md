@@ -28,4 +28,4 @@ It prints the first path whose opening typed prompt carries the fragment. Do not
 Present Accepted (problem, proposal, skill), Rejected (reason) and Backlog, and wait for approval before editing any skill.
 
 
-Never edit a skill under `plugins/cache/`. A skill that `readlink` shows is a link into the tstack checkout is edited in that checkout, and the user commits it there. For any other skill, before approval, show its destination, `.claude/skills/<skill>/` or `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/<skill>/`. After approval, copy the skill folder there and edit the copy. Never open a PR or push.
+Never edit a skill under `plugins/cache/`. A skill that `readlink` shows is a link into the astack checkout is edited in that checkout, and the user commits it there. For any other skill, before approval, show its destination, `.claude/skills/<skill>/` or `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/<skill>/`. After approval, copy the skill folder there and edit the copy. Never open a PR or push.

@@ -1,5 +1,5 @@
 # Reads and checks a pstack model sheet. Shared by check-sheet.sh, which
-# setup-pstack runs after it writes a GitHub Copilot sheet, by the Copilot
+# setup-astack runs after it writes a GitHub Copilot sheet, by the Copilot
 # plugin hooks, which check the sheet again each time they read it, and by the
 # Muse SessionStart hook. POSIX awk, run under LC_ALL=C.
 

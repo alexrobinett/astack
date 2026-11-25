@@ -1,7 +1,7 @@
 {
-  "name": "tstack",
+  "name": "astack",
   "version": "0.1.0",
-  "description": "tstack with pstack routing: bunny-mode routes each task to a playbook. Fork of t3dotgg/tstack with pstack by Lauren Tan (poteto), ported by Michael Denyer.",
+  "description": "astack: tstack and pstack skills with routing. bunny-mode routes each task to a playbook. Fork of t3dotgg/tstack with pstack by Lauren Tan (poteto), ported by Michael Denyer.",
   "author": "Alex Robinett",
-  "repository": "https://github.com/alexrobinett/tstack"
+  "repository": "https://github.com/alexrobinett/astack"
 }

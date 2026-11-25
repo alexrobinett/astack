@@ -1,5 +1,5 @@
 <EXTREMELY_IMPORTANT>
-You have tstack with pstack routing.
+You have astack: the tstack and pstack skills, with bunny-mode routing.
 
 Read the `bunny-mode` skill's `SKILL.md` in full with `read_file` and follow its instructions when a task meets any of these:
 

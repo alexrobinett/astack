@@ -13,8 +13,8 @@ repo=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 claude="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 codex="${CODEX_HOME:-$HOME/.codex}"
 hook="$repo/hooks/session-start.sh"
-begin='<!-- tstack routing: begin -->'
-end='<!-- tstack routing: end -->'
+begin='<!-- astack routing: begin -->'
+end='<!-- astack routing: end -->'
 
 command -v node >/dev/null 2>&1 || { echo "install.sh needs Node.js" >&2; exit 1; }
 
@@ -61,7 +61,7 @@ hooks.SessionStart = (hooks.SessionStart ?? []).filter((entry) => !ours(entry));
 if (mode === "add") {
   hooks.SessionStart.push({
     matcher: "startup|resume|clear|compact",
-    hooks: [{ type: "command", command: `"${hook}"`, statusMessage: "Loading pstack routing" }],
+    hooks: [{ type: "command", command: `"${hook}"`, statusMessage: "Loading astack routing" }],
   });
 }
 if (hooks.SessionStart.length === 0) delete hooks.SessionStart;
@@ -98,9 +98,9 @@ if [ "${1:-}" = --uninstall ]; then
   settings_hook remove
   if [ -d "$codex" ]; then unlink_dir "$repo/skills" "$codex/skills"; agents_block remove; fi
   agy_roots | while IFS= read -r root; do
-    if ours "$root/plugins/tstack"; then rm "$root/plugins/tstack"; fi
+    if ours "$root/plugins/astack"; then rm "$root/plugins/astack"; fi
   done
-  echo "tstack uninstalled"
+  echo "astack uninstalled"
   exit 0
 fi
 
@@ -114,7 +114,7 @@ if [ -d "$codex" ]; then
   echo "Codex: skills and the AGENTS.md routing block installed"
 fi
 agy_roots | while IFS= read -r root; do
-  dest="$root/plugins/tstack"
+  dest="$root/plugins/astack"
   mkdir -p "$root/plugins"
   if [ ! -e "$dest" ] && [ ! -L "$dest" ] || ours "$dest"; then
     ln -sfn "$repo" "$dest"

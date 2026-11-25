@@ -11,9 +11,9 @@ harness rules win over this file.
 
 ## Install layout
 
-This is an install from the tstack fork, not the pstack plugin. Claude Code
+This is an astack install (tstack with pstack ported in), not the pstack plugin. Claude Code
 and Codex get linked skills. Antigravity gets the fork linked as a plugin at
-`<config>/plugins/tstack/`, where `<config>` is T3 Code's Antigravity config
+`<config>/plugins/astack/`, where `<config>` is T3 Code's Antigravity config
 folder (`~/.t3/userdata/providers/antigravity/<id>/config/`) or
 `~/.gemini/config/`.
 
@@ -23,14 +23,14 @@ folder (`~/.t3/userdata/providers/antigravity/<id>/config/`) or
 - Script paths in these skills point at
   `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/`. `install.sh` always links
   there, so those paths resolve on Codex threads too. The installed skills are
-  links into the tstack checkout, so edit a skill there, not in a copy.
+  links into the astack checkout, so edit a skill there, not in a copy.
 - The plugin agents (`bunny-agent`, `comment-sicko`, both thermo-nuclear
   reviewers) are installed in `~/.claude/agents/` and take their bare names
   as `subagent_type`. On Codex, follow `codex-tools.md`'s Subagent policy.
 - The routing instruction comes from a `SessionStart` hook on Claude Code and
   Antigravity, and a block in `~/.codex/AGENTS.md` on Codex, all set up by
   `install.sh`.
-- `/setup-pstack` writes the model sheet to the path for the thread's
+- `/setup-astack` writes the model sheet to the path for the thread's
   provider: Claude Code, Codex, or Antigravity.
 
 ## Subagents and delegates
@@ -65,16 +65,17 @@ diversity. On plain Claude Code or Codex they can only vary models within one
 provider. T3 Code can reach several providers, so fill panel seats across
 them.
 
-- The default panel is three seats, one per provider: the latest Claude
+- The default panel is three seats, one per provider: the `council members`
+  line in the astack model sheet, or without one the latest Claude
   flagship, the latest GPT flagship, and the latest Gemini flagship. Resolve
   each from `orchestrator_capabilities`. A panel with more seats than three
   adds the role's listed models after these. A panel that needs only one
   outside opinion, such as a second opinion, takes the flagship of a provider
   the thread is not on, Gemini first.
-- Run the Gemini seat on the Antigravity provider. When Antigravity is
-  unavailable, unauthenticated, or refuses for quota, try the newest Gemini
-  model on another provider that lists one, such as Cursor or OpenCode, and
-  say which in the report. A plan or quota refusal on one Gemini model means
+- Run the Gemini seat on the first provider in the sheet's `gemini providers`
+  line, by default Antigravity. When that provider is unavailable,
+  unauthenticated, or refuses for quota, try the next one (by default Cursor,
+  then OpenCode), and say which ran in the report. A plan or quota refusal on one Gemini model means
   try the next one down on that provider.
 - Seats on the thread's own provider may run native. Seats on another
   provider run through `delegate_task`.
