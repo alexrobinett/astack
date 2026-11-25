@@ -15,4 +15,6 @@ imported skills is `skills/.pstack-skills`.
 The pstack-claude port's changes are (c) 2026 Michael Denyer under the same MIT
 license ([LICENSE-pstack](LICENSE-pstack)). `scripts/sync-pstack.sh` records
 every change this fork makes to the imported files, and
-`scripts/t3-tools.md` is this fork's own addition.
+`scripts/t3-tools.md` is this fork's own addition. pstack's `poteto-mode`,
+`poteto-help`, and `poteto-agent` are renamed `bunny-mode`, `bunny-help`, and
+`bunny-agent`; the router's description still credits poteto.

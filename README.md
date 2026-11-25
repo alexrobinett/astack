@@ -33,7 +33,7 @@ Some skills call others. Install the ones they need too:
 ## pstack routing
 
 pstack is Lauren Tan's skill stack, ported to Claude Code and Codex by
-Michael Denyer. Its core is `poteto-mode`: a router that matches a task to one
+Michael Denyer. Its core is `bunny-mode` (pstack's `poteto-mode`, renamed here): a router that matches a task to one
 of 22 playbooks (bug fix, feature, refactor, investigation, shipping, and
 more), then pulls in the skills and principles that playbook needs. A
 `SessionStart` hook tells every session to route through it for any task
@@ -50,10 +50,12 @@ This fork carries 67 pstack skills unchanged except for these adaptations:
   replaced by `babysit-pr`. "Full send", "council", and "file a PR" run the
   tstack skills.
 - **Only Claude Code and Codex.** Mappings for other harnesses are removed.
+- **Renamed entry points.** `poteto-mode`, `poteto-help`, and `poteto-agent`
+  are `bunny-mode`, `bunny-help`, and `bunny-agent`.
 - **No plugin.** The plugin's agents install to `~/.claude/agents/`, and the
   routing hook and Codex `AGENTS.md` block come from `install.sh`.
 
-Start with `/poteto-mode <goal>`, or `/poteto-help` to find the right skill.
+Start with `/bunny-mode <goal>`, or `/bunny-help` to find the right skill.
 Configure models per role with `/setup-pstack`. On Claude Code, turn routing
 off with `session hook: off` in the model sheet (yours, or a project's
 `.claude/pstack-models.md`) or `PSTACK_SESSION_HOOK=off`. On Codex, routing is

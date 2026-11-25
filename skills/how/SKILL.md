@@ -5,9 +5,9 @@ description: "Use for \"how does X work\", code walkthroughs before changing som
 
 # How
 
-On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
+On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
 
-In T3 Code, also read the [T3 Code mapping](../poteto-mode/references/t3-tools.md) before following this skill.
+In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
 Explore the codebase to answer "how does X work?" questions.
 

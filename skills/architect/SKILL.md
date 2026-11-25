@@ -5,9 +5,9 @@ description: "Sketch types, signatures, and module structure before code, then s
 
 # Architect
 
-On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
+On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
 
-In T3 Code, also read the [T3 Code mapping](../poteto-mode/references/t3-tools.md) before following this skill.
+In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
 Before writing code, trace every system the change touches, then sketch two different shapes for it (types, signatures, module boundaries) and pick the one where each piece of state has one owner, each task has one way to do it, and callers need to know least. Redesign instead of patching if workarounds repeat.
 

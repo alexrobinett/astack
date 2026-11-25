@@ -1,7 +1,7 @@
 <EXTREMELY_IMPORTANT>
 You have tstack with pstack routing.
 
-Invoke the `poteto-mode` skill and follow its instructions when a task meets any of these:
+Invoke the `bunny-mode` skill and follow its instructions when a task meets any of these:
 
 - it touches more than one file, or changes a signature other files call
 - it involves a design or architecture choice
@@ -11,5 +11,5 @@ It routes to the right skill from there. For smaller tasks, such as a contained 
 
 When the intent is already specific, enter that skill directly: `tdd`, `architect`, `how`, `why`, `arena`, `interrogate`.
 
-User instructions (CLAUDE.md, AGENTS.md, direct requests) take precedence. Other session-start mandates, such as superpowers, still apply. Their skill checks run as before, and when a task meets the criteria above they route implementation through poteto-mode.
+User instructions (CLAUDE.md, AGENTS.md, direct requests) take precedence. Other session-start mandates, such as superpowers, still apply. Their skill checks run as before, and when a task meets the criteria above they route implementation through bunny-mode.
 </EXTREMELY_IMPORTANT>

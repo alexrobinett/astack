@@ -5,9 +5,9 @@ description: "Fan out N parallel workers, drain them, and return one report. Use
 
 # Swarm
 
-On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
+On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
 
-In T3 Code, also read the [T3 Code mapping](../poteto-mode/references/t3-tools.md) before following this skill.
+In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
 ## Start
 
@@ -22,7 +22,7 @@ Open a todolist with one entry per phase before launching anything.
 
 1. State the done predicate and the artifact or report the swarm must return.
 2. Choose the shape. Partition into slices, race N workers on identical briefs, or mix both. For a race or mixed shape, declare `first pass`, `rank all`, or `best-of` before spawning.
-3. Pick the worker model from the `swarm workers` line in `pstack-models.md`. If the sheet or that line is missing, use the default in [Models](#models). For `auto` or `inherit-parent`, omit `model` so the workers run on the parent model. If the `Agent` tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message. For a model race, name each arm's model up front. Pick each subagent's reasoning level for the job, per the Subagents section of the **poteto-mode** skill.
+3. Pick the worker model from the `swarm workers` line in `pstack-models.md`. If the sheet or that line is missing, use the default in [Models](#models). For `auto` or `inherit-parent`, omit `model` so the workers run on the parent model. If the `Agent` tool rejects a slug, use the default and say so. If it rejects the default, use the closest valid slug of the same family from its error message. For a model race, name each arm's model up front. Pick each subagent's reasoning level for the job, per the Subagents section of the **bunny-mode** skill.
 4. Give each worker its own writable output when it writes. When workers verify or measure commits, each brief names the exact SHAs. A measurement brief also names the method (sample count, what one sample is, order). The worker records both in its result.
 
 ## Phase B: Fan out

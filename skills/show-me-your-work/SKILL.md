@@ -5,9 +5,9 @@ description: "Keep a reviewable decision trail for long-running or unattended wo
 
 # Show me your work
 
-On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
+On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
 
-In T3 Code, also read the [T3 Code mapping](../poteto-mode/references/t3-tools.md) before following this skill.
+In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
 Keep one canonical log.
 
@@ -67,7 +67,7 @@ Correct the log, not the story. The audit never edits or removes a row, even an 
 
 ## Cross-model review of the trail
 
-Before handing back, spawn a subagent on a model from another family than the one that did the work. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each subagent's reasoning level for the job, per the Subagents section of the **poteto-mode** skill.
+Before handing back, spawn a subagent on a model from another family than the one that did the work. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky. Pick each subagent's reasoning level for the job, per the Subagents section of the **bunny-mode** skill.
 
 - Decisions logged with weak or absent evidence.
 - Verification steps skipped or claimed without proof in the transcript.

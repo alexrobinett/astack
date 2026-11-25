@@ -18,7 +18,7 @@ This is a skills-only install from the tstack fork, not the pstack plugin.
   `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/`. `install.sh` always links
   there, so those paths resolve on Codex threads too. The installed skills are
   links into the tstack checkout, so edit a skill there, not in a copy.
-- The plugin agents (`poteto-agent`, `comment-sicko`, both thermo-nuclear
+- The plugin agents (`bunny-agent`, `comment-sicko`, both thermo-nuclear
   reviewers) are installed in `~/.claude/agents/` and take their bare names
   as `subagent_type`. On Codex, follow `codex-tools.md`'s Subagent policy.
 - The routing instruction comes from a `SessionStart` hook on Claude Code and
@@ -46,7 +46,7 @@ T3 Code has two ways to start another agent. Choose per dispatch:
   Follow its `next` instruction.
 - The kickoff rules still apply. The first line of every brief, native or
   delegated, is `Read <path>/worker.md before anything else.`, with `<path>`
-  the absolute path of the `poteto-mode` skill folder.
+  the absolute path of the `bunny-mode` skill folder.
 - A delegated child does the work itself, starts no agents unless its brief
   says to, and never watches a PR.
 
@@ -80,19 +80,19 @@ them.
   **babysit-pr** replaces it.
 - **Shipping playbook.** In step 5, wait with `watch_pull_request` on the
   ceiling PR instead of `watch-pr --queued-stack` under `/loop`. Merge safety
-  still needs `ship-pr` from `skills/poteto-mode/scripts/watch-pr/`, which
+  still needs `ship-pr` from `skills/bunny-mode/scripts/watch-pr/`, which
   needs `bun`. If `bun` is missing, stop at merge-ready and say why. Do not
   merge without it.
 - **Never wait with** `sleep`, a polling loop, `gh --watch`, `Monitor`, or
   `ScheduleWakeup` for a PR. For a background command or Monitor you started,
   use `t3_background_wait`.
-- **Which PR format.** Inside a poteto-mode run, the Opening a PR playbook
+- **Which PR format.** Inside a bunny-mode run, the Opening a PR playbook
   owns the PR, its title, and its body, and **file-pr** does not run, even
   when its description matches. **file-pr** owns the PR only outside
-  poteto-mode, or when **full-send**, **full-stop**, or **takeover** calls
+  bunny-mode, or when **full-send**, **full-stop**, or **takeover** calls
   it.
 - **tstack shipping skills.** "Full send" and "full stop" run tstack's
-  **full-send** and **full-stop**. Run poteto-mode's playbook for the change
+  **full-send** and **full-stop**. Run bunny-mode's playbook for the change
   first, then hand the finished branch to that skill, which then owns the
   PR.
 - **Autopilot owners.** T3 Code never lets a delegated child watch a PR, so
@@ -115,7 +115,7 @@ them.
 
 ## Autonomy
 
-poteto-mode's Autonomy section lets reversible external actions proceed
+bunny-mode's Autonomy section lets reversible external actions proceed
 without asking. In T3 Code, outward-facing actions (posting to an external
 service, messaging people, publishing) still need the user's approval unless
 the user already gave it for this context. Irreversible writes always pause.

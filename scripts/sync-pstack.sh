@@ -109,4 +109,21 @@ perl -0pi -e 's/With no path, before any other work, search .*? If no such file 
 perl -pe 's/`pstack:([a-z-]+)`/`$1`/g; s/You have pstack\./You have tstack with pstack routing./; s/the right pstack skill/the right skill/' \
   "$plugin/hooks/session-start-context.md" > "$root/hooks/routing.md"
 
+# Rename the poteto-* entry points to bunny-*. Credit to poteto (Lauren Tan)
+# stays in the router's description and in NOTICE.md.
+mv "$root/skills/poteto-mode" "$root/skills/bunny-mode"
+mv "$root/skills/poteto-help" "$root/skills/bunny-help"
+mv "$root/agents/poteto-agent.md" "$root/agents/bunny-agent.md"
+mv "$root/skills/bunny-mode/references/agents/poteto-agent.md" "$root/skills/bunny-mode/references/agents/bunny-agent.md"
+grep -rlI --exclude-dir=node_modules 'poteto' "$root/skills" "$root/agents" "$root/hooks/routing.md" | while IFS= read -r f; do
+  perl -pi -e '
+    s/poteto-(mode|help|agent)/bunny-$1/g;
+    s/^# Poteto (mode|help|subagent)$/# Bunny $1/;
+    s/^description: poteto.s agent style/description: Bunny mode, an agent style adapted from poteto\x27s pstack,/;
+    s/Use for poteto, \/bunny-mode/Use for bunny, \/bunny-mode/;
+  ' "$f"
+done
+perl -pi -e 's/^poteto-(mode|help)$/bunny-$1/' "$manifest"
+perl -pi -e 's/^poteto-agent\.md$/bunny-agent.md/' "$agents_manifest"
+
 echo "imported $(wc -l < "$manifest" | tr -d ' ') pstack skills from $(cat "$root/skills/.pstack-commit" 2>/dev/null || echo "$src")"

@@ -5,9 +5,9 @@ description: "Generate a project-local skill that formally verifies the code whe
 
 # Create a formal verification skill
 
-On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
+On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
 
-In T3 Code, also read the [T3 Code mapping](../poteto-mode/references/t3-tools.md) before following this skill.
+In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
 A test checks the cases that someone thought to write. Formal verification checks every case in a stated scope: every order of steps in a model, every input up to a bound, or every input. This skill finds the part of the repo where that matters most, verifies one property of it, and leaves a project-local skill that lets the next agent check a change against that property. Write that skill for an agent who reads it cold, mid-change, and has never seen your work. The user must be able to trust the result and act on it without learning the verification language.
 
