@@ -173,6 +173,7 @@ The deliverable is layered, never a single monolithic file:
 - Keep the summary readable in one sitting, around 200 lines: the verdict, each finding as a short narrative paragraph, a proposed remediation sequence, and a pointer to the detail file that carries the finding's full evidence.
 - Detail files carry the depth: measurements, the commands that produced them, verification status, and worked code-judo proposals.
 - Write findings as prose paragraphs. Name the file and the evidence, then explain the problem and the remedy in sentences. Do not compress findings into fragment lines, tag soup, or inline command dumps in the summary.
+- When the review fans out parallel reviewers via the **swarm** skill, this section overrides swarm's aggregation rules: per-reviewer reports are the deliverable's detail files, not raw dumps to discard. Consolidate judgment into the summary; keep the details on disk and link to them.
 
 ## Approval Bar
 

@@ -1,8 +1,8 @@
-# tstack (+ code quality)
+# tstack + pstack
 
-A fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) with code-quality
-skills adapted from [pstack](https://github.com/michael-denyer/pstack-claude).
-See [Code quality](#code-quality) below.
+A fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) with all of
+[pstack](https://github.com/michael-denyer/pstack-claude) ported in, including
+its routing. See [pstack routing](#pstack-routing) below.
 
 The agent skills I use every day, cleaned up so anyone can use them. They work
 in Claude Code and Codex. Some use [T3 Code](https://github.com/pingdotgg/t3code)
@@ -30,44 +30,56 @@ Some skills call others. Install the ones they need too:
 - `takeover` uses `modernize`, `file-pr`, `babysit-pr`, and `leaving-pr-comments`.
 - `file-pr`, `babysit-pr`, and `modernize` use `leaving-pr-comments`.
 
-## Code quality
+## pstack routing
 
-Adapted from pstack (Lauren Tan, Cursor, and the
-[pstack-claude](https://github.com/michael-denyer/pstack-claude) port). The
-plugin agents became prompt files in each skill's `reviewers/` folder, so they
-work as plain skills. Reviewers run as native subagents, or as `delegate_task`
-children in T3 Code when you name a model on another provider.
+pstack is Lauren Tan's skill stack, ported to Claude Code and Codex by
+Michael Denyer. Its core is `poteto-mode`: a router that matches a task to one
+of 22 playbooks (bug fix, feature, refactor, investigation, shipping, and
+more), then pulls in the skills and principles that playbook needs. A
+`SessionStart` hook tells every session to route through it for any task
+that touches more than one file, makes a design choice, or chases an unknown
+bug.
 
-| Skill | Say | What it does |
-|---|---|---|
-| `architect` | "architect this" | Sketches types, signatures, and module structure before code. |
-| `thermos` | "thermos" | Runs both thermo-nuclear reviews in parallel and merges the findings. |
-| `thermo-nuclear-review` | "thermo nuclear" | Strict audit of a diff for bugs, breaking changes, and security. |
-| `thermo-nuclear-code-quality-review` | "code quality review" | Strict maintainability audit: abstractions, giant files, spaghetti. |
-| `deslop` | "deslop" | Removes AI-generated slop from the branch's diff. |
-| `no-comments` | "no comments" | Deletes needless comments and flags the code that needed them. |
-| `blast-radius` | "blast radius" | Finds what a change could break beyond the diff, and proves it is safe. |
-| `correct` | "correct" | Makes repeated agent mistakes impossible with types, lints, or tests. |
-| `tdd` | "TDD" | Red-green-refactor when a cheap test target exists. |
-| `typescript-best-practices` | (automatic) | TypeScript rules for any `.ts` or `.tsx` edit. |
-| `principle-*` | (automatic in Claude Code; by name in Codex) | Eleven principles the agent applies while it designs, writes, tests, and debugs code. |
+This fork carries 67 pstack skills unchanged except for these adaptations:
 
-- `thermos` uses `thermo-nuclear-review` and `thermo-nuclear-code-quality-review`.
-- `no-comments` uses `architect` and two principles.
-- `architect` and `blast-radius` use `council` for large changes.
+- **T3 Code mapping.** [`t3-tools.md`](scripts/t3-tools.md) tells pstack how
+  to use T3 Code: `delegate_task` for background, worktree, and
+  cross-provider agents; model panels (`arena`, `interrogate`) that mix
+  providers; `watch_pull_request` and `link_pull_request` for PRs.
+- **tstack wins where they overlap.** pstack's standalone `babysit` skill is
+  replaced by `babysit-pr`. "Full send", "council", and "file a PR" run the
+  tstack skills.
+- **Only Claude Code and Codex.** Mappings for other harnesses are removed.
+- **No plugin.** The plugin's agents install to `~/.claude/agents/`, and the
+  routing hook and Codex `AGENTS.md` block come from `install.sh`.
+
+Start with `/poteto-mode <goal>`, or `/poteto-help` to find the right skill.
+Configure models per role with `/setup-pstack`. Turn routing off with
+`session hook: off` in the model sheet or `PSTACK_SESSION_HOOK=off`.
+
+To update from pstack, pull a pstack-claude checkout and run
+`scripts/sync-pstack.sh <checkout>`. It replaces the imported skills and
+reapplies every adaptation. `skills/.pstack-commit` records the source commit.
 
 ## Install
 
 ```bash
 git clone https://github.com/alexrobinett/tstack
-cp -R tstack/skills/* ~/.claude/skills/   # Claude Code
-cp -R tstack/skills/* ~/.codex/skills/    # Codex
+tstack/install.sh             # links skills and agents, adds the routing hook
+tstack/install.sh --uninstall
 ```
+
+Skills install as links into this checkout, so `git pull` updates them.
+Codex gets the skills and an `AGENTS.md` routing block when `~/.codex`
+exists. If the pstack plugin is installed too, uninstall it so skills don't
+load twice: `claude plugin uninstall pstack@pstack-claude`.
 
 ## Requirements
 
 - An authenticated [GitHub CLI](https://cli.github.com) (`gh`).
-- `python3` for `babysit-pr`'s `pr-wait` script.
+- `python3` for `babysit-pr`'s `pr-wait` script, and Node.js for pstack's scripts.
+- [`bun`](https://bun.sh) for pstack's `watch-pr` and `ship-pr` scripts. Without it,
+  the Shipping playbook stops at merge-ready.
 - `council` and `sol-loop` need subagents on other providers' models. T3 Code
   does this with `delegate_task`. Otherwise you need a harness that can run
   those models.
@@ -80,5 +92,5 @@ skills without losing them.
 
 ## License
 
-[MIT](LICENSE). The code-quality skills keep their upstream MIT licenses:
-see [NOTICE.md](NOTICE.md).
+[MIT](LICENSE). pstack's skills keep their upstream MIT licenses; see
+[NOTICE.md](NOTICE.md).

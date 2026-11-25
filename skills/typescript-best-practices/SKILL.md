@@ -6,6 +6,10 @@ paths: ["**/*.ts", "**/*.tsx"]
 
 # TypeScript best practices
 
+On Codex, read the [platform mapping](../poteto-mode/references/codex-tools.md), including its per-skill notes, before following this skill.
+
+In T3 Code, also read the [T3 Code mapping](../poteto-mode/references/t3-tools.md) before following this skill.
+
 Apply the **type-system-discipline** principle skill first.
 
 | Rule | Summary |
