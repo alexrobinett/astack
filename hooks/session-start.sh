@@ -21,7 +21,10 @@ fi
 
 off=0
 [ "${ASTACK_SESSION_HOOK:-}" != off ] || off=1
-if [ -f "$sheet" ] && grep -qix 'session hook: *off' "$sheet"; then off=1; fi
+# read-sheet.sh strips a BOM and CRLF endings and decodes UTF-16.
+reader="$here/../skills/setup-astack/scripts/read-sheet.sh"
+if [ -f "$sheet" ] && sh "$reader" "$sheet" 2>/dev/null |
+  grep -qiE '^[[:space:]]*session hook:[[:space:]]*off[[:space:]]*$'; then off=1; fi
 
 if [ "$runtime" = agy ]; then
   # Antigravity expects JSON on stdout, even when routing is off.
