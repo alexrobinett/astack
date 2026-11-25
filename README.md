@@ -1,4 +1,8 @@
-# tstack
+# tstack (+ code quality)
+
+A fork of [t3dotgg/tstack](https://github.com/t3dotgg/tstack) with code-quality
+skills adapted from [pstack](https://github.com/michael-denyer/pstack-claude).
+See [Code quality](#code-quality) below.
 
 The agent skills I use every day, cleaned up so anyone can use them. They work
 in Claude Code and Codex. Some use [T3 Code](https://github.com/pingdotgg/t3code)
@@ -26,10 +30,36 @@ Some skills call others. Install the ones they need too:
 - `takeover` uses `modernize`, `file-pr`, `babysit-pr`, and `leaving-pr-comments`.
 - `file-pr`, `babysit-pr`, and `modernize` use `leaving-pr-comments`.
 
+## Code quality
+
+Adapted from pstack (Lauren Tan, Cursor, and the
+[pstack-claude](https://github.com/michael-denyer/pstack-claude) port). The
+plugin agents became prompt files in each skill's `reviewers/` folder, so they
+work as plain skills. Reviewers run as native subagents, or as `delegate_task`
+children in T3 Code when you name a model on another provider.
+
+| Skill | Say | What it does |
+|---|---|---|
+| `architect` | "architect this" | Sketches types, signatures, and module structure before code. |
+| `thermos` | "thermos" | Runs both thermo-nuclear reviews in parallel and merges the findings. |
+| `thermo-nuclear-review` | "thermo nuclear" | Strict audit of a diff for bugs, breaking changes, and security. |
+| `thermo-nuclear-code-quality-review` | "code quality review" | Strict maintainability audit: abstractions, giant files, spaghetti. |
+| `deslop` | "deslop" | Removes AI-generated slop from the branch's diff. |
+| `no-comments` | "no comments" | Deletes needless comments and flags the code that needed them. |
+| `blast-radius` | "blast radius" | Finds what a change could break beyond the diff, and proves it is safe. |
+| `correct` | "correct" | Makes repeated agent mistakes impossible with types, lints, or tests. |
+| `tdd` | "TDD" | Red-green-refactor when a cheap test target exists. |
+| `typescript-best-practices` | (automatic) | TypeScript rules for any `.ts` or `.tsx` edit. |
+| `principle-*` | (automatic in Claude Code; by name in Codex) | Eleven principles the agent applies while it designs, writes, tests, and debugs code. |
+
+- `thermos` uses `thermo-nuclear-review` and `thermo-nuclear-code-quality-review`.
+- `no-comments` uses `architect` and two principles.
+- `architect` and `blast-radius` use `council` for large changes.
+
 ## Install
 
 ```bash
-git clone https://github.com/t3dotgg/tstack
+git clone https://github.com/alexrobinett/tstack
 cp -R tstack/skills/* ~/.claude/skills/   # Claude Code
 cp -R tstack/skills/* ~/.codex/skills/    # Codex
 ```
@@ -50,4 +80,5 @@ skills without losing them.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The code-quality skills keep their upstream MIT licenses:
+see [NOTICE.md](NOTICE.md).
