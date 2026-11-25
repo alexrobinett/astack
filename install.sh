@@ -1,7 +1,8 @@
 #!/bin/sh
 # Link this checkout's skills and agents into Claude Code and Codex, and wire
 # up pstack routing. Idempotent. `git pull` in this checkout updates the
-# installed skills, because they are links.
+# installed skills, because they are links. Rerun it if the checkout moves.
+# It never replaces a skill or agent that did not come from this checkout.
 #
 #   ./install.sh            # Claude Code, plus Codex when ~/.codex exists
 #   ./install.sh --uninstall
@@ -13,22 +14,36 @@ hook="$repo/hooks/session-start.sh"
 begin='<!-- tstack routing: begin -->'
 end='<!-- tstack routing: end -->'
 
+command -v node >/dev/null 2>&1 || { echo "install.sh needs Node.js" >&2; exit 1; }
+
+ours() { # <path>: true when <path> is a link into this checkout
+  case "$(readlink "$1" 2>/dev/null)" in "$repo"/*) return 0 ;; *) return 1 ;; esac
+}
+
+prune() { # <dest-dir>: remove links into this checkout whose target is gone
+  for dest in "$1"/* "$1"/.[!.]*; do
+    if ours "$dest" && [ ! -e "$dest" ]; then rm "$dest"; fi
+  done
+  return 0
+}
+
 link_dir() { # <source-dir> <dest-dir>
   mkdir -p "$2"
+  prune "$2"
   for src in "$1"/*; do
     dest="$2/$(basename "$src")"
-    if [ -L "$dest" ] || [ ! -e "$dest" ]; then
+    if [ ! -e "$dest" ] && [ ! -L "$dest" ] || ours "$dest"; then
       ln -sfn "$src" "$dest"
     else
-      echo "skip $dest: exists and is not a link (move it away to install)" >&2
+      echo "skip $dest: it already exists and is not from this checkout" >&2
     fi
   done
 }
 
 unlink_dir() { # <source-dir> <dest-dir>
-  for src in "$1"/*; do
-    dest="$2/$(basename "$src")"
-    [ "$(readlink "$dest" 2>/dev/null)" = "$src" ] && rm "$dest"
+  [ -d "$2" ] || return 0
+  for dest in "$2"/*; do
+    if ours "$dest"; then rm "$dest"; fi
   done
   return 0
 }
@@ -48,6 +63,7 @@ if (mode === "add") {
   });
 }
 if (hooks.SessionStart.length === 0) delete hooks.SessionStart;
+if (Object.keys(hooks).length === 0) delete settings.hooks;
 fs.writeFileSync(file, JSON.stringify(settings, null, 2) + "\n");
 JS
 }

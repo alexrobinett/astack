@@ -14,10 +14,10 @@ This is a skills-only install from the tstack fork, not the pstack plugin.
 - Skills live in `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/` on Claude Code
   and `${CODEX_HOME:-$HOME/.codex}/skills/` on Codex. Skill names have no
   `pstack:` prefix.
-- Where a skill says "the installed plugin" or `<plugin>`, use the parent of
-  the skills directory this skill loaded from, such as `~/.claude`. So
-  `<plugin>/skills/reflect/scripts/...` is
-  `~/.claude/skills/reflect/scripts/...`.
+- Script paths in these skills point at
+  `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/`. `install.sh` always links
+  there, so those paths resolve on Codex threads too. The installed skills are
+  links into the tstack checkout, so edit a skill there, not in a copy.
 - The plugin agents (`poteto-agent`, `comment-sicko`, both thermo-nuclear
   reviewers) are installed in `~/.claude/agents/` and take their bare names
   as `subagent_type`. On Codex, follow `codex-tools.md`'s Subagent policy.
@@ -86,10 +86,22 @@ them.
 - **Never wait with** `sleep`, a polling loop, `gh --watch`, `Monitor`, or
   `ScheduleWakeup` for a PR. For a background command or Monitor you started,
   use `t3_background_wait`.
+- **Which PR format.** Inside a poteto-mode run, the Opening a PR playbook
+  owns the PR, its title, and its body, and **file-pr** does not run, even
+  when its description matches. **file-pr** owns the PR only outside
+  poteto-mode, or when **full-send**, **full-stop**, or **takeover** calls
+  it.
 - **tstack shipping skills.** "Full send" and "full stop" run tstack's
   **full-send** and **full-stop**. Run poteto-mode's playbook for the change
-  first, then hand the finished branch to that skill. "File a PR" runs
-  **file-pr**; otherwise the Opening a PR playbook sets the PR body.
+  first, then hand the finished branch to that skill, which then owns the
+  PR.
+- **Autopilot owners.** T3 Code never lets a delegated child watch a PR, so
+  in Autopilot-full and Autopilot-stack the parent thread watches every PR in
+  the program with `watch_pull_request`. Each owner is a `delegate_task`
+  child that builds, opens, and proves its PR, then returns at a wait. When
+  a watch wakes the parent with a failed check, a review, or a conflict,
+  the parent starts a fresh owner delegate for that PR with the original
+  brief, the prior report, and the news.
 
 ## Other tools
 

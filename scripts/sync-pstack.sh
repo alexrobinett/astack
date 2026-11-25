@@ -16,26 +16,48 @@ manifest="$root/skills/.pstack-skills"
 # supersedes its standalone babysit skill; tstack's babysit-pr is T3-native.
 skip="babysit"
 
-# Remove the previous import, so skills deleted upstream disappear here too.
-if [ -f "$manifest" ]; then
-  while IFS= read -r name; do
-    [ -n "$name" ] && rm -rf "$root/skills/$name"
-  done < "$manifest"
-fi
+agents_manifest="$root/agents/.pstack-agents"
+touch "$manifest"
+mkdir -p "$root/agents"
+touch "$agents_manifest"
+
+# Check for collisions with tstack's own skills and agents before changing
+# anything, so a failed sync leaves the tree as it was.
+for path in "$plugin"/skills/*/ "$plugin"/agents/*.md; do
+  name=$(basename "$path")
+  case " $skip " in *" $name "*) continue ;; esac
+  case "$path" in
+    */agents/*) dest="$root/agents/$name"; list="$agents_manifest" ;;
+    *) dest="$root/skills/$name"; list="$manifest" ;;
+  esac
+  if [ -e "$dest" ] && ! grep -qxF "$name" "$list"; then
+    echo "collision with a tstack file: $dest" >&2
+    exit 1
+  fi
+done
+
+# Remove the previous import, so files deleted upstream disappear here too.
+while IFS= read -r name; do
+  [ -n "$name" ] && rm -rf "$root/skills/$name"
+done < "$manifest"
+while IFS= read -r name; do
+  [ -n "$name" ] && rm -f "$root/agents/$name"
+done < "$agents_manifest"
 : > "$manifest"
+: > "$agents_manifest"
 
 for dir in "$plugin"/skills/*/; do
   name=$(basename "$dir")
   case " $skip " in *" $name "*) continue ;; esac
-  [ -e "$root/skills/$name" ] && { echo "collision with a tstack skill: $name" >&2; exit 1; }
   cp -R "$dir" "$root/skills/$name"
   echo "$name" >> "$manifest"
 done
 
-# Plugin agents become Claude Code user agents (install.sh copies them).
-rm -rf "$root/agents"
-mkdir -p "$root/agents"
-cp "$plugin"/agents/*.md "$root/agents/"
+# Plugin agents become Claude Code user agents (install.sh links them).
+for f in "$plugin"/agents/*.md; do
+  cp "$f" "$root/agents/"
+  basename "$f" >> "$agents_manifest"
+done
 cp "$plugin"/agents/*.md "$root/skills/poteto-mode/references/agents/"
 
 # Licenses and provenance travel with the import.
@@ -51,7 +73,7 @@ done
 cp "$root/scripts/t3-tools.md" "$refs/t3-tools.md"
 
 find "$root/skills" "$root/agents" -name '*.md' | while IFS= read -r f; do
-  grep -q 'pstack\|poteto\|platform mapping\|babysit' "$f" || continue
+  grep -q 'pstack\|poteto\|platform mapping\|babysit\|plugin' "$f" || continue
   perl -0pi -e '
     # Per-skill preambles: drop other harnesses, add T3 Code after Codex.
     s/^On (?:GitHub Copilot|Muse|Antigravity|Pi|MiniMax Code|OMP|Kimi Code CLI|Grok Build|DeepSeek Harness|OpenCode 2), read the \[platform mapping\][^\n]*\n\n//mg;
@@ -63,6 +85,17 @@ find "$root/skills" "$root/agents" -name '*.md' | while IFS= read -r f; do
     # The standalone babysit skill is tstack babysit-pr.
     s/the bundled \*\*babysit\*\* skill/the **babysit-pr** skill/g;
     s/\(\.\.\/babysit\/SKILL\.md\)/(..\/babysit-pr\/SKILL.md)/g;
+    s/pstack.s standalone \[`\/babysit`\]\(\.\.\/babysit-pr\/SKILL\.md\) skill/tstack\x27s [`babysit-pr`](..\/babysit-pr\/SKILL.md) skill/g;
+    # Plugin paths become the skills directory install.sh links. Codex gets
+    # the same links, so the Claude Code path resolves on both.
+    s/<plugin>\/skills\//\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\//g;
+    s/`skills\/([^`]*)` under the installed plugin/`\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/$1`/g;
+    s/under the installed plugin.s `skills\/([^`]*)` directory/in the `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/$1` directory/g;
+    s/ from disk under the installed plugin/ from disk/g;
+    s/The local links point into the installed plugin/The local links point into the installed skills/g;
+    # Installed skills are links into this checkout: edit them there.
+    s/Never edit a skill under `plugins\/cache\/`\. Before approval, show its destination, .*?After approval, copy the skill folder there and edit the copy\./Never edit a skill under `plugins\/cache\/`. A skill that `readlink` shows is a link into the tstack checkout is edited in that checkout, and the user commits it there. For any other skill, before approval, show its destination, `.claude\/skills\/<skill>\/` or `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/<skill>\/`. After approval, copy the skill folder there and edit the copy./s;
+    s/For a pstack skill, never edit the installed plugin under .*? and does not merge them\. \|/In this install, `\${CODEX_HOME:-~\/.codex}\/skills\/<skill>` is a link into the tstack checkout, so edit a tstack skill in that checkout and let the user commit it. For any other skill, before approval show the destination, the repository\x27s `.agents\/skills\/<skill>\/` for a project copy, and after approval copy the skill folder there. |/s;
     # Links to the dropped harness mappings keep their text, lose the link.
     s/\[([^\]]*)\]\([^)]*\/(?:pi-tools|copilot-tools|muse-tools|minimax-tools|agy-tools|omp-tools|kimi-tools|grok|dsh-tools|opencode-tools)\.md(?:#[^)]*)?\)/$1/g;
   ' "$f"

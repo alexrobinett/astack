@@ -54,8 +54,11 @@ This fork carries 67 pstack skills unchanged except for these adaptations:
   routing hook and Codex `AGENTS.md` block come from `install.sh`.
 
 Start with `/poteto-mode <goal>`, or `/poteto-help` to find the right skill.
-Configure models per role with `/setup-pstack`. Turn routing off with
-`session hook: off` in the model sheet or `PSTACK_SESSION_HOOK=off`.
+Configure models per role with `/setup-pstack`. On Claude Code, turn routing
+off with `session hook: off` in the model sheet (yours, or a project's
+`.claude/pstack-models.md`) or `PSTACK_SESSION_HOOK=off`. On Codex, routing is
+the block between the `tstack routing` markers in `~/.codex/AGENTS.md`; delete
+it to turn routing off.
 
 To update from pstack, pull a pstack-claude checkout and run
 `scripts/sync-pstack.sh <checkout>`. It replaces the imported skills and
@@ -71,7 +74,8 @@ tstack/install.sh --uninstall
 
 Skills install as links into this checkout, so `git pull` updates them.
 Codex gets the skills and an `AGENTS.md` routing block when `~/.codex`
-exists. If the pstack plugin is installed too, uninstall it so skills don't
+exists. The hook points at this checkout, so rerun `install.sh` if you move
+it. If the pstack plugin is installed too, uninstall it so skills don't
 load twice: `claude plugin uninstall pstack@pstack-claude`.
 
 ## Requirements
