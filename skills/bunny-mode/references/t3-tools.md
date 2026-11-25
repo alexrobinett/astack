@@ -12,8 +12,10 @@ harness rules win over this file.
 ## Install layout
 
 This is an install from the tstack fork, not the pstack plugin. Claude Code
-and Codex get linked skills. Antigravity gets the fork as a plugin, copied to
-`~/.gemini/config/plugins/tstack/`.
+and Codex get linked skills. Antigravity gets the fork linked as a plugin at
+`<config>/plugins/tstack/`, where `<config>` is T3 Code's Antigravity config
+folder (`~/.t3/userdata/providers/antigravity/<id>/config/`) or
+`~/.gemini/config/`.
 
 - Skills live in `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/` on Claude Code
   and `${CODEX_HOME:-$HOME/.codex}/skills/` on Codex. Skill names have no

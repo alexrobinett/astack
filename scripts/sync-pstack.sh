@@ -104,7 +104,7 @@ find "$root/skills" "$root/agents" -name '*.md' | while IFS= read -r f; do
 done
 
 # The poteto-agent definition looks for poteto-mode in the plugin cache.
-perl -0pi -e 's/With no path, before any other work, search .*? If no such file exists, stop and tell your parent\./With no path, read `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/poteto-mode\/SKILL.md`, or `\${CODEX_HOME:-\$HOME\/.codex}\/skills\/poteto-mode\/SKILL.md` on Codex, or `~\/.gemini\/config\/plugins\/tstack\/skills\/poteto-mode\/SKILL.md` on Antigravity. If none exists, stop and tell your parent./s' \
+perl -0pi -e 's/With no path, before any other work, search .*? If no such file exists, stop and tell your parent\./With no path, read `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/poteto-mode\/SKILL.md`, or `\${CODEX_HOME:-\$HOME\/.codex}\/skills\/poteto-mode\/SKILL.md` on Codex, or `skills\/poteto-mode\/SKILL.md` inside the tstack plugin folder on Antigravity. If none exists, stop and tell your parent./s' \
   "$root/agents/poteto-agent.md" "$refs/agents/poteto-agent.md"
 
 # Routing context for the SessionStart hook and AGENTS.md.
