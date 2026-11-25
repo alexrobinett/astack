@@ -9,6 +9,8 @@ On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), 
 
 In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
+On Antigravity, read the [platform mapping](../bunny-mode/references/agy-tools.md), including its per-skill notes, before following this skill.
+
 Write the current runtime's per-role model override sheet. Each pstack skill names a default model inline; the override sheet adapts those defaults to the models you actually have access to.
 
 On any runtime other than Claude Code, read [Other runtimes](references/runtimes.md) first. Its table gives the sheet path, how the sheet loads, and how to list models, and your runtime's section says which steps change. The rest of this file describes Claude Code.

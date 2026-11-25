@@ -49,7 +49,13 @@ This fork carries 67 pstack skills unchanged except for these adaptations:
 - **tstack wins where they overlap.** pstack's standalone `babysit` skill is
   replaced by `babysit-pr`. "Full send", "council", and "file a PR" run the
   tstack skills.
-- **Only Claude Code and Codex.** Mappings for other harnesses are removed.
+- **Claude Code, Codex, and Antigravity.** Mappings for other harnesses are
+  removed. Antigravity installs the fork as a plugin (`.antigravity-plugin/`
+  and the root `hooks.json`), with the same routing hook.
+- **Gemini is the third seat.** In T3 Code, review panels (`arena`,
+  `interrogate`, second opinions) default to one Claude, one GPT, and one
+  Gemini flagship. Gemini runs on Antigravity, or on another T3 provider that
+  lists a Gemini model.
 - **Renamed entry points.** `poteto-mode`, `poteto-help`, and `poteto-agent`
   are `bunny-mode`, `bunny-help`, and `bunny-agent`.
 - **No plugin.** The plugin's agents install to `~/.claude/agents/`, and the
@@ -76,7 +82,8 @@ tstack/install.sh --uninstall
 
 Skills install as links into this checkout, so `git pull` updates them.
 Codex gets the skills and an `AGENTS.md` routing block when `~/.codex`
-exists. The hook points at this checkout, so rerun `install.sh` if you move
+exists. Antigravity gets the plugin through `agy plugin install` when `agy` is
+installed; it copies the plugin, so rerun `install.sh` after `git pull`. The hook points at this checkout, so rerun `install.sh` if you move
 it. If the pstack plugin is installed too, uninstall it so skills don't
 load twice: `claude plugin uninstall pstack@pstack-claude`.
 

@@ -1,15 +1,19 @@
 # T3 Code mapping for pstack
 
-T3 Code runs threads on Claude Code or Codex. pstack's skills already work on
-both: Claude Code natively, Codex through [`codex-tools.md`](codex-tools.md).
+T3 Code runs threads on Claude Code, Codex, or Antigravity. pstack's skills
+work on all three: Claude Code natively, Codex through
+[`codex-tools.md`](codex-tools.md), and Antigravity through
+[`agy-tools.md`](agy-tools.md).
 Read this file as well whenever the session has T3 Code's tools
 (`delegate_task`, `watch_pull_request`, `t3_thread_read`). Where it differs
-from the Claude Code or Codex defaults, this file wins. T3 Code's own
+from the provider's defaults, this file wins. T3 Code's own
 harness rules win over this file.
 
 ## Install layout
 
-This is a skills-only install from the tstack fork, not the pstack plugin.
+This is an install from the tstack fork, not the pstack plugin. Claude Code
+and Codex get linked skills. Antigravity gets the fork as a plugin, copied to
+`~/.gemini/config/plugins/tstack/`.
 
 - Skills live in `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills/` on Claude Code
   and `${CODEX_HOME:-$HOME/.codex}/skills/` on Codex. Skill names have no
@@ -22,9 +26,10 @@ This is a skills-only install from the tstack fork, not the pstack plugin.
   reviewers) are installed in `~/.claude/agents/` and take their bare names
   as `subagent_type`. On Codex, follow `codex-tools.md`'s Subagent policy.
 - The routing instruction comes from a `SessionStart` hook on Claude Code and
-  a block in `~/.codex/AGENTS.md` on Codex, both written by `install.sh`.
+  Antigravity, and a block in `~/.codex/AGENTS.md` on Codex, all set up by
+  `install.sh`.
 - `/setup-pstack` writes the model sheet to the path for the thread's
-  provider: Claude Code or Codex.
+  provider: Claude Code, Codex, or Antigravity.
 
 ## Subagents and delegates
 
@@ -32,7 +37,7 @@ T3 Code has two ways to start another agent. Choose per dispatch:
 
 | pstack asks for | In T3 Code |
 |---|---|
-| A subagent on the thread's own provider, waited on in this turn | The native tool: the `Agent` tool with `run_in_background: false` on Claude Code, `spawn_agent` then `wait_agent` on Codex. Put parallel calls in one message. |
+| A subagent on the thread's own provider, waited on in this turn | The native tool: the `Agent` tool with `run_in_background: false` on Claude Code, `spawn_agent` then `wait_agent` on Codex, `invoke_subagent` on Antigravity. Put parallel calls in one message. |
 | `run_in_background: true`, a background worker, or work that runs while you continue | `delegate_task`. Never a background `Agent`. |
 | A model on another provider, or an effort the user set | `delegate_task`, with settings in `target.options`. |
 | `isolation: "worktree"`, or "each writer in its own worktree" | `delegate_task` with `isolation: "worktree"`. Do not create the child's checkout in the shell. |
@@ -58,12 +63,21 @@ diversity. On plain Claude Code or Codex they can only vary models within one
 provider. T3 Code can reach several providers, so fill panel seats across
 them.
 
-- Resolve the panel from `orchestrator_capabilities`: the latest flagship
-  from each reachable provider first, then the role's listed models.
+- The default panel is three seats, one per provider: the latest Claude
+  flagship, the latest GPT flagship, and the latest Gemini flagship. Resolve
+  each from `orchestrator_capabilities`. A panel with more seats than three
+  adds the role's listed models after these. A panel that needs only one
+  outside opinion, such as a second opinion, takes the flagship of a provider
+  the thread is not on, Gemini first.
+- Run the Gemini seat on the Antigravity provider. When Antigravity is
+  unavailable, unauthenticated, or refuses for quota, try the newest Gemini
+  model on another provider that lists one, such as Cursor or OpenCode, and
+  say which in the report. A plan or quota refusal on one Gemini model means
+  try the next one down on that provider.
 - Seats on the thread's own provider may run native. Seats on another
   provider run through `delegate_task`.
-- If a named seat is unavailable, report it. Do not swap in another
-  provider's model without saying so.
+- If a seat is still unavailable after that fallback, report it. Do not swap
+  in another provider's model without saying so.
 - tstack's **council** and **sol-loop** skills are cross-provider review
   loops. When a playbook asks for an independent review and the user prefers
   council, run council for that gate.
@@ -108,7 +122,7 @@ them.
 | pstack asks for | In T3 Code |
 |---|---|
 | A `/loop` or self-paced wake-up for an unattended run | `schedule_task` only when the user asked for a schedule. Otherwise keep working, or end the turn with a report. |
-| Read this session's transcript (`recall`, `show-me-your-work`, `reflect`, `eval`) | Use `t3_thread_read` for a T3 thread, then the provider's transcript files as `recall` and `codex-tools.md` describe. |
+| Read this session's transcript (`recall`, `show-me-your-work`, `reflect`, `eval`) | Use `t3_thread_read` for a T3 thread, then the provider's transcript files as `recall`, `codex-tools.md`, and `agy-tools.md` describe. |
 | Show a picture, chart, or slides (`ketchup`, `teach`) | `html_preview`, then `html_render`. |
 | Drive a UI, browser, or device (driver skills, `create-verification-skill`) | T3 Code's `preview_*` tools for web pages, and its device tools for simulators. |
 | Text the user must read mid-turn | `send_to_user`. |

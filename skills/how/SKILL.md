@@ -9,6 +9,8 @@ On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), 
 
 In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
+On Antigravity, read the [platform mapping](../bunny-mode/references/agy-tools.md), including its per-skill notes, before following this skill.
+
 Explore the codebase to answer "how does X work?" questions.
 
 If the scope is ambiguous, state your interpretation and explore. The user can redirect.

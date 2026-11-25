@@ -9,6 +9,8 @@ On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), 
 
 In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
+On Antigravity, read the [platform mapping](../bunny-mode/references/agy-tools.md), including its per-skill notes, before following this skill.
+
 **Before you start or resume work, you rebuild the user's recent working context and hand back a tight capsule of where things stand now and what to do next.**
 
 Keep it tight and on-topic. Read only what the in-scope threads need, then stop.

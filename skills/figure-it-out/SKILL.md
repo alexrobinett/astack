@@ -9,6 +9,8 @@ On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), 
 
 In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
+On Antigravity, read the [platform mapping](../bunny-mode/references/agy-tools.md), including its per-skill notes, before following this skill.
+
 When the task matches no playbook, design one. The deliverable before any code is the workflow itself: a sequence of phases that scales rigor to the task, runs the scientific method, and leaves a decision trail a human can audit after stepping away.
 
 ## Start

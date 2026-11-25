@@ -4,7 +4,8 @@
 # installed skills, because they are links. Rerun it if the checkout moves.
 # It never replaces a skill or agent that did not come from this checkout.
 #
-#   ./install.sh            # Claude Code, plus Codex when ~/.codex exists
+#   ./install.sh            # Claude Code, plus Codex when ~/.codex exists,
+#                           # plus Antigravity when `agy` is installed
 #   ./install.sh --uninstall
 set -eu
 repo=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
@@ -86,6 +87,9 @@ if [ "${1:-}" = --uninstall ]; then
   unlink_dir "$repo/agents" "$claude/agents"
   settings_hook remove
   if [ -d "$codex" ]; then unlink_dir "$repo/skills" "$codex/skills"; agents_block remove; fi
+  if [ -d "$HOME/.gemini/config/plugins/tstack" ]; then
+    echo "Antigravity: remove the tstack plugin with agy, or delete ~/.gemini/config/plugins/tstack" >&2
+  fi
   echo "tstack uninstalled"
   exit 0
 fi
@@ -98,6 +102,11 @@ if [ -d "$codex" ]; then
   link_dir "$repo/skills" "$codex/skills"
   agents_block add
   echo "Codex: skills and the AGENTS.md routing block installed"
+fi
+if command -v agy >/dev/null 2>&1; then
+  # Antigravity copies the plugin, so rerun install.sh after a git pull.
+  agy plugin install "$repo"
+  echo "Antigravity: tstack plugin installed (skills, agents, routing hook)"
 fi
 if command -v claude >/dev/null 2>&1 && claude plugin list 2>/dev/null | grep -q 'pstack@'; then
   echo "note: the pstack plugin is also installed, so every pstack skill loads twice." >&2

@@ -9,6 +9,8 @@ On Codex, read the [platform mapping](../bunny-mode/references/codex-tools.md), 
 
 In T3 Code, also read the [T3 Code mapping](../bunny-mode/references/t3-tools.md) before following this skill.
 
+On Antigravity, read the [platform mapping](../bunny-mode/references/agy-tools.md), including its per-skill notes, before following this skill.
+
 Adversaries try to break a change or a design. A finding survives only when a run proves it. Report the findings. Do not apply fixes.
 
 ## Frame
