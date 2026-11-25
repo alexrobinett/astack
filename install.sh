@@ -5,7 +5,8 @@
 # It never replaces a skill or agent that did not come from this checkout.
 #
 #   ./install.sh            # Claude Code, plus Codex when ~/.codex exists,
-#                           # plus Antigravity when `agy` is installed
+#                           # plus Antigravity: T3 Code's bundled copy and
+#                           # ~/.gemini/config when it exists
 #   ./install.sh --uninstall
 set -eu
 repo=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
@@ -17,8 +18,8 @@ end='<!-- tstack routing: end -->'
 
 command -v node >/dev/null 2>&1 || { echo "install.sh needs Node.js" >&2; exit 1; }
 
-ours() { # <path>: true when <path> is a link into this checkout
-  case "$(readlink "$1" 2>/dev/null)" in "$repo"/*) return 0 ;; *) return 1 ;; esac
+ours() { # <path>: true when <path> is a link to or into this checkout
+  case "$(readlink "$1" 2>/dev/null)" in "$repo"|"$repo"/*) return 0 ;; *) return 1 ;; esac
 }
 
 prune() { # <dest-dir>: remove links into this checkout whose target is gone
@@ -69,6 +70,15 @@ fs.writeFileSync(file, JSON.stringify(settings, null, 2) + "\n");
 JS
 }
 
+# Antigravity discovers plugins in <config root>/plugins/<name>/. T3 Code's
+# bundled Antigravity keeps its config root under T3's data directory.
+agy_roots() {
+  for root in "$HOME"/.t3/userdata/providers/antigravity/*/config "$HOME/.gemini/config"; do
+    [ -d "$root" ] && printf '%s\n' "$root"
+  done
+  return 0
+}
+
 agents_block() { # add|remove
   file="$codex/AGENTS.md"
   [ -f "$file" ] || [ "$1" = add ] || return 0
@@ -87,9 +97,9 @@ if [ "${1:-}" = --uninstall ]; then
   unlink_dir "$repo/agents" "$claude/agents"
   settings_hook remove
   if [ -d "$codex" ]; then unlink_dir "$repo/skills" "$codex/skills"; agents_block remove; fi
-  if [ -d "$HOME/.gemini/config/plugins/tstack" ]; then
-    echo "Antigravity: remove the tstack plugin with agy, or delete ~/.gemini/config/plugins/tstack" >&2
-  fi
+  agy_roots | while IFS= read -r root; do
+    if ours "$root/plugins/tstack"; then rm "$root/plugins/tstack"; fi
+  done
   echo "tstack uninstalled"
   exit 0
 fi
@@ -103,11 +113,16 @@ if [ -d "$codex" ]; then
   agents_block add
   echo "Codex: skills and the AGENTS.md routing block installed"
 fi
-if command -v agy >/dev/null 2>&1; then
-  # Antigravity copies the plugin, so rerun install.sh after a git pull.
-  agy plugin install "$repo"
-  echo "Antigravity: tstack plugin installed (skills, agents, routing hook)"
-fi
+agy_roots | while IFS= read -r root; do
+  dest="$root/plugins/tstack"
+  mkdir -p "$root/plugins"
+  if [ ! -e "$dest" ] && [ ! -L "$dest" ] || ours "$dest"; then
+    ln -sfn "$repo" "$dest"
+    echo "Antigravity: plugin linked at $dest"
+  else
+    echo "skip $dest: it already exists and is not from this checkout" >&2
+  fi
+done
 if command -v claude >/dev/null 2>&1 && claude plugin list 2>/dev/null | grep -q 'pstack@'; then
   echo "note: the pstack plugin is also installed, so every pstack skill loads twice." >&2
   echo "      remove it with: claude plugin uninstall pstack@pstack-claude" >&2
