@@ -111,7 +111,7 @@ Playbooks are step lists inside `/bunny-mode`, not skills, so they have no slash
 
 - "babysit this pr" or "check on pr 123" runs Babysit. It drives the PR to merge-ready and stops there. It doesn't merge unless the user asks to merge, land, or ship.
 - "land the stack" runs Shipping.
-- "take over this branch" runs Session pickup.
+- "pick up where I left off on this branch" runs Session pickup. "Take over" someone else's PR, branch, or thread runs tstack's [`takeover`](../takeover/SKILL.md) skill instead.
 - "pause safely" runs Pause safely.
 - "full autopilot on this queue" runs [Autopilot-full](../bunny-mode/playbooks/autopilot-full.md). "stack them, don't ship" runs [Autopilot-stack](../bunny-mode/playbooks/autopilot-stack.md). Read the selected playbook's merge rules before explaining what runs unattended.
 - "run the eval playbook" runs Eval.

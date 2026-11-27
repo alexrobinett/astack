@@ -1,7 +1,8 @@
 #!/bin/sh
 # Import pstack's skills and agents from a pstack-claude checkout, then adapt
 # them for this repo: Claude Code and Codex only, plus the T3 Code mapping.
-# Idempotent. Rerun after updating the checkout, then review the diff.
+# Idempotent. Rerun after updating the checkout, then review the diff. It ends
+# by running scripts/check.sh, which fails when an adaptation did not apply.
 #
 #   scripts/sync-pstack.sh <path-to-pstack-claude-checkout>
 set -eu
@@ -70,7 +71,20 @@ refs="$root/skills/poteto-mode/references"
 for f in pi-tools copilot-tools muse-tools minimax-tools omp-tools kimi-tools grok dsh-tools opencode-tools; do
   rm -f "$refs/$f.md"
 done
-cp "$root/scripts/t3-tools.md" "$refs/t3-tools.md"
+cp "$root/scripts/t3-tools.md" "$root/scripts/tstack-skills.md" "$refs/"
+
+# setup-pstack's notes for the dropped harnesses point at those mappings.
+setup_src="$root/skills/setup-pstack"
+rm -f "$setup_src/copilot.md"
+perl -0pi -e '
+  my $gone = qr/Pi|GitHub Copilot|Muse|MiniMax Code|Kimi Code CLI|OMP|Grok Build|OpenCode 2|DeepSeek Harness/;
+  s/^\| (?:$gone)[^|\n]*\|[^\n]*\n//mg;
+  s/^## (?:$gone)\n.*?(?=^## |\z)//msg;
+' "$setup_src/references/runtimes.md"
+perl -0pi -e '
+  s/# The default sheet is GitHub Copilot.s, so setup-pstack can run this without\n# naming a path outside the workspace\.\n/# The default sheet is the Claude Code user sheet.\n/ or die "check-sheet: comment anchor missing\n";
+  s/\$\{COPILOT_HOME:-\$HOME\/\.copilot\}\/pstack-models\.md/\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/pstack-models.md/ or die "check-sheet: default path anchor missing\n";
+' "$setup_src/scripts/check-sheet.sh"
 
 find "$root/skills" "$root/agents" -name '*.md' | while IFS= read -r f; do
   grep -q 'pstack\|poteto\|platform mapping\|babysit\|plugin' "$f" || continue
@@ -106,6 +120,15 @@ done
 # The poteto-agent definition looks for poteto-mode in the plugin cache.
 perl -0pi -e 's/With no path, before any other work, search .*? If no such file exists, stop and tell your parent\./With no path, read `\${CLAUDE_CONFIG_DIR:-\$HOME\/.claude}\/skills\/poteto-mode\/SKILL.md`, or `\${CODEX_HOME:-\$HOME\/.codex}\/skills\/poteto-mode\/SKILL.md` on Codex, or `skills\/poteto-mode\/SKILL.md` inside the astack plugin folder on Antigravity. If none exists, stop and tell your parent./s' \
   "$root/agents/poteto-agent.md" "$refs/agents/poteto-agent.md"
+
+# The router and its help page learn which tstack skill or playbook owns
+# overlapping work, on every harness.
+perl -0pi -e '
+  s/(it overrides the Claude Code, Codex, and Antigravity defaults where they differ\.)/$1 This install also carries tstack\x27s skills (`full-send`, `full-stop`, `council`, `sol-loop`, `file-pr`, `takeover`, `modernize`, `babysit-pr`). Before a request that names one of them, or before opening a PR, read [`references\/tstack-skills.md`](references\/tstack-skills.md), which says whether the skill or a playbook owns the work./ or die "poteto-mode: Platform Adaptation anchor missing\n";
+' "$root/skills/poteto-mode/SKILL.md"
+perl -0pi -e '
+  s/- "take over this branch" runs Session pickup\./- "pick up where I left off on this branch" runs Session pickup. "Take over" someone else\x27s PR, branch, or thread runs tstack\x27s [`takeover`](..\/takeover\/SKILL.md) skill instead./ or die "poteto-help: Session pickup anchor missing\n";
+' "$root/skills/poteto-help/SKILL.md"
 
 # Routing context for the SessionStart hook and AGENTS.md.
 perl -pe 's/`pstack:([a-z-]+)`/`$1`/g; s/You have pstack\./You have astack: the tstack and pstack skills, with bunny-mode routing./; s/the right pstack skill/the right skill/' \
@@ -155,5 +178,8 @@ perl -0pi -e '
   s/(If a chosen real slug or level is not available, stop and ask again\.)/$1 Check the tstack lines from step 3b against `orchestrator_capabilities` instead. A model or provider it does not list needs a new choice./ or die "setup-astack: step 5 anchor missing\n";
   s/\n(default effort: session\nsession hook: on\n)/\ncouncil members: claude flagship, gpt flagship, gemini flagship\nsol-loop model: gpt flagship\ngemini providers: antigravity, cursor, opencode\n\n$1/ or die "setup-astack: sheet template anchor missing\n";
 ' "$setup"
+
+# A rewrite above that stopped matching upstream leaves text this catches.
+sh "$root/scripts/check.sh"
 
 echo "imported $(wc -l < "$manifest" | tr -d ' ') pstack skills from $(cat "$root/skills/.pstack-commit" 2>/dev/null || echo "$src")"

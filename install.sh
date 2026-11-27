@@ -1,7 +1,8 @@
 #!/bin/sh
 # Link this checkout's skills and agents into Claude Code and Codex, and wire
 # up pstack routing. Idempotent. `git pull` in this checkout updates the
-# installed skills, because they are links. Rerun it if the checkout moves.
+# installed skills, because they are links. Rerun it if the checkout moves:
+# it replaces the dead links and the hook entry the old location left.
 # It never replaces a skill or agent that did not come from this checkout.
 #
 #   ./install.sh            # Claude Code, plus Codex when ~/.codex exists,
@@ -18,8 +19,17 @@ end='<!-- astack routing: end -->'
 
 command -v node >/dev/null 2>&1 || { echo "install.sh needs Node.js" >&2; exit 1; }
 
-ours() { # <path>: true when <path> is a link to or into this checkout
-  case "$(readlink "$1" 2>/dev/null)" in "$repo"|"$repo"/*) return 0 ;; *) return 1 ;; esac
+ours() { # <path>: true when <path> is a link this installer made
+  target=$(readlink "$1" 2>/dev/null) || return 1
+  case "$target" in "$repo"|"$repo"/*) return 0 ;; esac
+  # A checkout that moved leaves dead links behind. A dead link is ours when
+  # it has the shape this installer writes: <checkout>/skills/<name>,
+  # <checkout>/agents/<name>, or the Antigravity plugin link.
+  [ ! -e "$1" ] || return 1
+  name=$(basename "$1")
+  case "$target" in */skills/"$name"|*/agents/"$name") return 0 ;; esac
+  case "$1" in */plugins/astack) return 0 ;; esac
+  return 1
 }
 
 prune() { # <dest-dir>: remove links into this checkout whose target is gone
@@ -56,12 +66,15 @@ const fs = require("fs");
 const [file, hook, mode] = process.argv.slice(2);
 const settings = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : {};
 const hooks = (settings.hooks ??= {});
-const ours = (entry) => (entry.hooks ?? []).some((h) => h.command?.includes(hook));
+// The status message also matches an entry whose checkout has since moved.
+const status = "Loading astack routing";
+const ours = (entry) =>
+  (entry.hooks ?? []).some((h) => h.command?.includes(hook) || h.statusMessage === status);
 hooks.SessionStart = (hooks.SessionStart ?? []).filter((entry) => !ours(entry));
 if (mode === "add") {
   hooks.SessionStart.push({
     matcher: "startup|resume|clear|compact",
-    hooks: [{ type: "command", command: `"${hook}"`, statusMessage: "Loading astack routing" }],
+    hooks: [{ type: "command", command: `"${hook}"`, statusMessage: status }],
   });
 }
 if (hooks.SessionStart.length === 0) delete hooks.SessionStart;

@@ -45,9 +45,12 @@ missing or pre-failing checks in the brief.
 
 ## 2. Start Sol
 
-In T3, call `orchestrator_capabilities`. Use the `sol-loop model` line in the
-astack model sheet (`astack-models.md`, which `/setup-astack` writes) when it
-names a model. Otherwise pick the latest Sol unless the user named a version. Do not hardcode an ID. Record provider, model, and effort
+In astack, a `sol-loop model` line in the model sheet (`astack-models.md`,
+which `/setup-astack` writes) names the model to use when the user named
+none.
+
+In T3, call `orchestrator_capabilities`. Pick the latest Sol unless the user
+named a version. Do not hardcode an ID. Record provider, model, and effort
 only if exposed. Use `delegate_task` every round (`role: "review"`,
 `mode: "async"`). Save `taskId`. New `clientRequestId` per round.
 `childThreadId` is storage, not the next target. Do not use
